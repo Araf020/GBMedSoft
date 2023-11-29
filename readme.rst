@@ -33,7 +33,7 @@ Local Environment
 ************
 Installation
 ************
-~~~
+~~~sql
  - git clone https://github.com/Araf020/GBMedSoft.git
  - cd GBMedSoft
  - composer install
