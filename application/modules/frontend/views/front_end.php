@@ -832,7 +832,8 @@ $title = explode(' ', $settings->title);
                 </div>
             </div>
         </div> -->
-        <script src="front-end/assets/js/jquery-3.5.1.min.dc5e7f18c85de7.js?site=5f16ec24d8bd7908a5d24625" type="text/javascript" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+        <!-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> -->
+        <script src="front-end/assets/js/jquery-3.5.1.min.dc5e7f18c85de7.js?site=5f16ec24d8bd7908a5d24625" type="text/javascript"  crossorigin="anonymous"></script>
         <script src="front-end/assets/5f16ec24d8bd7908a5d24625/js/partnerstack-1-9.6849d928e.js" type="text/javascript"></script>
 
         <script src="common/js/bootstrap.min.js"></script>
@@ -844,7 +845,7 @@ $title = explode(' ', $settings->title);
 
 </html>
 
-<script type="text/javascript" src="common/assets/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="common/assets/ckeditor/build/ckeditor.js"></script>
 <script src="common/js/codearistos.min.js"></script>
 <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
 <script type="text/javascript">
@@ -862,10 +863,10 @@ $title = explode(' ', $settings->title);
     <!--End of Tawk.to Script-->
 <?php } ?>
 
-<?php
+<!-- <?php
 $googleReCaptchaSiteKey =  $this->settings_model->getGoogleReCaptchaSettings()->site_key;
-?>
-<script src="https://www.google.com/recaptcha/api.js?render=<?php echo $googleReCaptchaSiteKey; ?>"></script>
+?> -->
+<!-- <script src="https://www.google.com/recaptcha/api.js?render=<?php echo $googleReCaptchaSiteKey; ?>"></script>
 <script>
     // function onClick(e) {
     //   e.preventDefault();
@@ -877,4 +878,4 @@ $googleReCaptchaSiteKey =  $this->settings_model->getGoogleReCaptchaSettings()->
         });
     });
     //  }
-</script>
+</script> -->

@@ -3,7 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class Frontend extends MX_Controller
+class Frontend extends MY_Controller
 {
 
     function __construct()
@@ -24,6 +24,9 @@ class Frontend extends MX_Controller
         $this->load->model('hospital/hospital_model');
         $this->load->model('donor/donor_model');
         $this->load->model('sms/sms_model');
+        $this->load->helper('language');
+        //load settings model
+        $this->load->model('settings/settings_model');
     }
 
     public function index()
@@ -37,10 +40,11 @@ class Frontend extends MX_Controller
         $data['slides'] = $this->slide_model->getSlide();
         $data['services'] = $this->service_model->getService();
         $data['featureds'] = $this->featured_model->getFeatured();
-        // $data['settings1'] = $this->db->get_where('settings', array('hospital_id' => 'superadmin'))->row();
-        // $data['gateway'] = $this->db->get_where('paymentGateway', array('name' => $data['settings1']->payment_gateway, 'hospital_id' => 'superadmin'))->row();
-        echo "i m in frontend controller";
-        // $this->load->view('front_end', $data);
+        $data['settings1'] = $this->db->get_where('settings', array('hospital_id' => 'superadmin'))->row();
+        $data['gateway'] = $this->db->get_where('paymentGateway', array('name' => $data['settings1']->payment_gateway, 'hospital_id' => 'superadmin'))->row();
+        // echo "i m in frontend controller";
+
+        $this->load->view('front_end', $data);
     }
 
     public function addNew()
