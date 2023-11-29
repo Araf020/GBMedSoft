@@ -17,13 +17,13 @@ class Frontend extends MX_Controller
         $this->load->model('frontend/slide_model');
         $this->load->model('frontend/service_model');
         $this->load->model('featured/featured_model');
-        // require APPPATH . 'third_party/stripe/stripe-php/init.php';
+        require APPPATH . 'third_party/stripe/stripe-php/init.php';
         $this->load->module('paypal');
-        // $this->load->model('email/email_model');
-        // $this->load->model('pgateway/pgateway_model');
-        // $this->load->model('hospital/hospital_model');
-        // $this->load->model('donor/donor_model');
-        // $this->load->model('sms/sms_model');
+        $this->load->model('email/email_model');
+        $this->load->model('pgateway/pgateway_model');
+        $this->load->model('hospital/hospital_model');
+        $this->load->model('donor/donor_model');
+        $this->load->model('sms/sms_model');
     }
 
     public function index()
