@@ -12,7 +12,7 @@ class Frontend extends MX_Controller
 
         $this->load->model('frontend_model');
         $this->load->model('doctor/doctor_model');
-        // $this->load->model('hospital/package_model');
+        $this->load->model('hospital/package_model');
         // $this->load->model('patient/patient_model');
         // $this->load->model('frontend/slide_model');
         // $this->load->model('frontend/service_model');
