@@ -23,9 +23,9 @@ issues, as well as missing features.
 ******************
 ## Local Environment
 ******************
-1. Xampp should be installed\
-2. Run Apache Server from xampp\
-3. Run Mysql Server from xampp\
+1. Xampp should be installed \
+2. Run Apache Server from xampp \
+3. Run Mysql Server from xampp \
 
 
 ************
