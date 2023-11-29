@@ -33,11 +33,12 @@ Local Environment
 ************
 Installation
 ************
-
-   - git clone https://github.com/Araf020/GBMedSoft.git
-   - cd GBMedSoft
-   - composer install
-   - php -S localhost:8000
-   `Now visit localhost:8000`
+~~~
+- git clone https://github.com/Araf020/GBMedSoft.git
+- cd GBMedSoft
+- composer install
+- php -S localhost:8000
+`Now visit localhost:8000`
+~~~
 
 
