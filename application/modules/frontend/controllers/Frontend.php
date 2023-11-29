@@ -13,12 +13,12 @@ class Frontend extends MX_Controller
         $this->load->model('frontend_model');
         $this->load->model('doctor/doctor_model');
         $this->load->model('hospital/package_model');
-        // $this->load->model('patient/patient_model');
-        // $this->load->model('frontend/slide_model');
-        // $this->load->model('frontend/service_model');
-        // $this->load->model('featured/featured_model');
+        $this->load->model('patient/patient_model');
+        $this->load->model('frontend/slide_model');
+        $this->load->model('frontend/service_model');
+        $this->load->model('featured/featured_model');
         // require APPPATH . 'third_party/stripe/stripe-php/init.php';
-        // $this->load->module('paypal');
+        $this->load->module('paypal');
         // $this->load->model('email/email_model');
         // $this->load->model('pgateway/pgateway_model');
         // $this->load->model('hospital/hospital_model');
@@ -34,9 +34,9 @@ class Frontend extends MX_Controller
         $data['doctors'] = $this->doctor_model->getDoctor();
         
         $data['packages'] = $this->package_model->getPackage();
-        // $data['slides'] = $this->slide_model->getSlide();
-        // $data['services'] = $this->service_model->getService();
-        // $data['featureds'] = $this->featured_model->getFeatured();
+        $data['slides'] = $this->slide_model->getSlide();
+        $data['services'] = $this->service_model->getService();
+        $data['featureds'] = $this->featured_model->getFeatured();
         // $data['settings1'] = $this->db->get_where('settings', array('hospital_id' => 'superadmin'))->row();
         // $data['gateway'] = $this->db->get_where('paymentGateway', array('name' => $data['settings1']->payment_gateway, 'hospital_id' => 'superadmin'))->row();
         echo "i m in frontend controller";
