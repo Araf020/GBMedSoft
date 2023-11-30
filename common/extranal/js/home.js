@@ -42,7 +42,7 @@ if (superadmin_login == 'no') {
             [treated_lang, appointment_treated],
             [cancelled_lang, appointment_cancelled],
         ]);
-
+        var appointment_lang = '(English)';
         var options = {
             title: selectedMonthName + appointment_lang,
             is3D: true
