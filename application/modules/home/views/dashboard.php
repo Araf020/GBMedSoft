@@ -74,6 +74,7 @@
 
     <link href="common/extranal/css/medical_history_calendar_modal.css" rel="stylesheet">
 
+    
 
     <link href="common/css/style-responsive.css" rel="stylesheet" />
 
