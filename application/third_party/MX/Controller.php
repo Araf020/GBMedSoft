@@ -50,12 +50,15 @@ class MX_Controller
 		$this->load = clone load_class('Loader');
 		$this->load->initialize($this);	
 		
+
+		
 		/* autoload module items */
 		$this->load->_autoloader($this->autoload);
 	}
 	
 	public function __get($class) 
 	{
+		
 		return CI::$APP->$class;
 	}
 }

@@ -1,4 +1,6 @@
 <script type="text/javascript" src="common/js/google-loader.js"></script>
+<!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
+
 <link href="common/extranal/css/home.css" rel="stylesheet">
 <section id="main-content">
     <section class="wrapper site-min-height">

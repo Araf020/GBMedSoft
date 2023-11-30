@@ -13,7 +13,7 @@
 <?php
 $language = $this->language;
 
-
+$langdate = 'en-CA';
 if ($language == 'english') {
     $lang = 'en-ca';
     $langdate = 'en-CA';
@@ -51,7 +51,7 @@ if ($language == 'english') {
 
 
 ?>
-
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script type="text/javascript">
     var langdate = "<?php echo $langdate; ?>";
     $(document).ready(function() {
@@ -92,7 +92,7 @@ if ($language == 'english') {
 <script src="common/js/advanced-form-components.js"></script>
 <script src="common/js/jquery.cookie.js"></script>
 <!--common script for all pages-->
-<!-- <script src="common/js/jquery.nicescroll.js" type="text/javascript"></script> -->
+<script src="common/js/jquery.nicescroll.js" type="text/javascript"></script>
 <script src="common/js/common-scripts.js"></script>
 <script src="common/js/lightbox.js"></script>
 <script class="include" type="text/javascript" src="common/js/jquery.dcjqaccordion.2.7.js"></script>
@@ -115,7 +115,9 @@ if ($language == 'english') {
 
 
 <script src="common/assets/bootstrap-datepicker/locales/bootstrap-datepicker.<?php echo $langdate; ?>.min.js"></script>
-<script src="common/assets/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.<?php echo $langdate; ?>.min.js"></script>
+<!-- <script src="common/assets/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.<?php echo $langdate; ?>.min.js"></script> -->
+<script src="common/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+
 
 
 

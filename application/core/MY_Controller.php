@@ -20,6 +20,10 @@ class MY_Controller extends MX_Controller
 		//fix callback form_validation		
 		//https://bitbucket.org/wiredesignz/codeigniter-modular-extensions-hmvc
 		$this->load->library(array('ion_auth', 'form_validation'));
+		
+		$this->load->module(array('modules','language'));
+		
+
 		$this->form_validation->CI =& $this;
 	}
 
