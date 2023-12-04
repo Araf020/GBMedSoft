@@ -195,6 +195,7 @@ class Prescription extends MX_Controller {
     function viewPrescription() {
         $id = $this->input->get('id');
         $data['prescription'] = $this->prescription_model->getPrescriptionById($id);
+        $data['redirect'] = '';
 
         if (!empty($data['prescription']->hospital_id)) {
             if ($data['prescription']->hospital_id != $this->session->userdata('hospital_id')) {
