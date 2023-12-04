@@ -299,7 +299,7 @@ height: 100%!important;
                             <table class="info_rer">
                                 <tr class="tr_info">
                                     <td id="first_td" style="">
-                                        <img class="img_class_logo" alt="" src="<?php echo $this->settings_model->getSettings()->logo; ?>" width="120">
+                                        
                                         <br>
                                         <?php if ($redirect == 'download') { ?>
                                             <div style="">
@@ -325,9 +325,9 @@ height: 100%!important;
                                     <td class="second_td">
                                         <?php if ($redirect != 'download') { ?>
                                             <div class="title_div">
-                                                <h4 class="title">
-                                                    <?php echo $settings->title ?>
-                                                </h4>
+                                               <br/>
+                                               <br/>
+                                                <img class="img_class_logo" alt="" src="<?php echo $this->settings_model->getSettings()->logo; ?>" width="120" height="80">
                                                 <h6>
                                                     <?php echo $settings->address ?>
                                                 </h6>
