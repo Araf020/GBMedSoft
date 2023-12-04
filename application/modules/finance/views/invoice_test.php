@@ -351,7 +351,13 @@ height: 100%!important;
                                             </div>
                                         <?php } ?>
                                     </td>
-                                    <td class="last_td">
+                                   
+
+                                </tr>
+                            </table>
+                            <table class="info_rer">
+                                <tr class="tr_info">
+                                <td class="last_td" style="margin-left:5px;">
                                         <?php if ($redirect != 'download') { ?>
                                             <div class="paragraphprint col-md-12">
                                                 <?php $patient_info = $this->db->get_where('patient', array('id' => $payment->patient))->row(); ?>
@@ -584,7 +590,6 @@ height: 100%!important;
                                             </table>
                                         <?php } ?>
                                     </td>
-
                                 </tr>
                             </table>
                             <table class="table_bar">

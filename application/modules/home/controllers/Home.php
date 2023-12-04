@@ -13,7 +13,34 @@ class Home extends MY_Controller {
         $this->load->model('home_model');
         $this->load->model('hospital/hospital_model');
         $this->load->model('settings/settings_model');
-        $this->modules = array('finance', 'appointment', 'notice', 'home', 'settings');
+        // $this->modules = array('finance', 'appointment', 'notice', 'home', 'settings');
+        $this->modules = array(
+            'bed',
+            'finance',
+            'patient',
+            'donor',
+            'medicine',
+            'report',
+            'department',
+            'doctor',
+            'appointment',
+            'notice',
+            'nurse',
+            'pharmacist',
+            'laboratorist',
+            'accountant',
+            'receptionist',
+            'attendance',
+            'leave',
+            'payroll',
+            'prescription',
+            'lab',
+            'pharmacy',
+            'file',
+            'email',
+            'sms',
+            'chat'
+        );
     }
 
     public function index() {
