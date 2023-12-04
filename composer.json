@@ -5,7 +5,17 @@
 	"homepage": "https://github.com/alzen8work/ci_hmvc",
 	"license": "MIT",
 	"require": {
-		"php": ">=5.2.4"
+		"php": ">=5.2.4",
+		"mpdf/mpdf": "8.2.2",
+		"phpoffice/phpword": "0.18.3",
+		"omnipay/paypal": "3.0",
+		"symfony/http-client": "^7.0",
+		"php-http/httplug": "^2.4",
+		"nyholm/psr7": "^1.8",
+		"league/omnipay": "3.2.1",
+		"twilio/sdk": "5.35",
+		"php-http/guzzle7-adapter": "^1.0",
+		"omnipay/common": "^3.2"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
@@ -13,5 +23,10 @@
 	"require-dev": {
 		"mikey179/vfsstream": "1.1.*",
 		"phpunit/phpunit": "4.* || 5.*"
+	},
+	"config": {
+		"allow-plugins": {
+			"php-http/discovery": true
+		}
 	}
 }
