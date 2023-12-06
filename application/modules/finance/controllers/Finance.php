@@ -2770,7 +2770,7 @@ class Finance extends MX_Controller
                             <tr class="tr_info">
 
                                 <td id="first_td" style="">
-                                    <img class="img_class_logo" alt="" src="' . $this->settings_model->getSettings()->logo . '" width="120">
+                                    
                                     <br>
                                     
                                         <div style="">
@@ -2784,6 +2784,20 @@ class Finance extends MX_Controller
                                        
                                         </div>
                                 </td>
+                                <td class="second_td">
+                                       
+                                            <div class="title_div">
+                                               <br/>
+                                               <br/>
+                                               <img class="img_class_logo" alt="" src="' . $this->settings_model->getSettings()->logo . '" >
+                                               <br>
+                                                <h6>
+                                                     ' . $this->settings->address . '
+                                                </h6>
+                                                
+                                            </div>
+                                        
+                                    </td>
                                 <td class="second_td">
                                    
                                         <div class="paragraphprint col-md-12" style="padding-top:-20px;">
@@ -2805,104 +2819,109 @@ class Finance extends MX_Controller
                                 </td>
 
 
-                                <td class="last_td">
-                                   
-                                        <table class="information_table">
-                                            <tr>
-                                                <td colspan="2">
-                                                    <div class="paragraphprint col-md-12">
-                                                       
-                                                        <label class="control-label"> ' . lang('name') . ' </label>
-                                                        <span class="info_text"> :
-                                                            
-                                                               ' . $patient_info->name . ' <br>
-                                                           
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-
-                                                    <label class="control-label">' . lang('age') . '</label>
-                                                    <span class="info_text"> :
-                                                        
-                                                            ' . $age[0] . ' ' . lang('y') . ' ' . $age[1] . ' ' . lang('m') . ' ' . $age[2] . ' ' . lang('d') . '<br>
-                                                        
-                                                    </span>
-
-                                                </td>
-                                                <td>
-
-                                                    <label class="control-label">' . lang('gender') . ' </label>
-                                                    <span class="info_text"> :
-                                                        ' . $sex . '
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="paragraphprint col-md-6 info_test">
-
-                                                        <label class="control-label">HN </label>
-                                                        <span class="info_text"> :
-                                                            
-                                                            ' . $patient_info_id . ' <br>
-                                                           
-                                                        </span>
-                                                    </div>
-
-                                                </td>
-                                                <td>
-
-                                                    <div class="paragraphprint col-md-6 info_test">
-                                                        <label class="control-label"> ' . lang('phone') . ' </label>
-                                                        <span class="info_text"> :
-                                                           ' . $patient_info->phone . '
-                                                            
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="paragraphprint col-md-6 info_test">
-                                                        <label class="control-label">VN </label>
-                                                        <span class="info_text"> :
-                                                            ' . $invoice_id . '
-                                                            
-                                                        </span>
-                                                    </div>
-
-                                                </td>
-                                                <td>
-
-                                                    <div class="paragraphprint col-md-6 info_test">
-                                                        <label class="control-label">VN  ' . lang('date') . ' </label>
-                                                        <span class="info_text"> :
-                                                            
-                                                              ' . date('d/m/Y', $payment->date) . '
-                                                           
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="2">
-                                                    <div class="paragraphprint col-md-12 last_td_info">
-                                                        <label class="control-label"> ' . lang('doctor') . ' </label>
-                                                        <span class="info_text"> :
-                                                            ' . $doctor . '
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                   
-                                </td>
+                                
 
                             </tr>
                         </table>
+                        <table class="info_rer">
+                        <tr class="tr_info">
+                         <td class="last_td">
+                               
+                                    <table class="information_table">
+                                        <tr>
+                                            <td colspan="2">
+                                                <div class="paragraphprint col-md-12">
+                                                   
+                                                    <label class="control-label"> ' . lang('name') . ' </label>
+                                                    <span class="info_text"> :
+                                                        
+                                                           ' . $patient_info->name . ' <br>
+                                                       
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+
+                                                <label class="control-label">' . lang('age') . '</label>
+                                                <span class="info_text"> :
+                                                    
+                                                        ' . $age[0] . ' ' . lang('y') . ' ' . $age[1] . ' ' . lang('m') . ' ' . $age[2] . ' ' . lang('d') . '<br>
+                                                    
+                                                </span>
+
+                                            </td>
+                                            <td>
+
+                                                <label class="control-label">' . lang('gender') . ' </label>
+                                                <span class="info_text"> :
+                                                    ' . $sex . '
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="paragraphprint col-md-6 info_test">
+
+                                                    <label class="control-label">HN </label>
+                                                    <span class="info_text"> :
+                                                        
+                                                        ' . $patient_info_id . ' <br>
+                                                       
+                                                    </span>
+                                                </div>
+
+                                            </td>
+                                            <td>
+
+                                                <div class="paragraphprint col-md-6 info_test">
+                                                    <label class="control-label"> ' . lang('phone') . ' </label>
+                                                    <span class="info_text"> :
+                                                       ' . $patient_info->phone . '
+                                                        
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="paragraphprint col-md-6 info_test">
+                                                    <label class="control-label">VN </label>
+                                                    <span class="info_text"> :
+                                                        ' . $invoice_id . '
+                                                        
+                                                    </span>
+                                                </div>
+
+                                            </td>
+                                            <td>
+
+                                                <div class="paragraphprint col-md-6 info_test">
+                                                    <label class="control-label">VN  ' . lang('date') . ' </label>
+                                                    <span class="info_text"> :
+                                                        
+                                                          ' . date('d/m/Y', $payment->date) . '
+                                                       
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <div class="paragraphprint col-md-12 last_td_info">
+                                                    <label class="control-label"> ' . lang('doctor') . ' </label>
+                                                    <span class="info_text"> :
+                                                        ' . $doctor . '
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                               
+                            </td>
+                     </tr>
+                    </table>
                         <table class="table_bar" style="margin-bottom: -35px;">
                             <tr>
                                 <td class="barcode_first_td">
@@ -2942,7 +2961,7 @@ class Finance extends MX_Controller
             $mpdf = new \Mpdf\Mpdf(['format' => 'A5', 'setAutoTopMargin' => 'true', 'margin_top' => -30]);
             $mpdf->SetHTMLHeader($header);
             $mpdf->setAutoTopMargin = 'stretch';
-            $mpdf->SetHTMLHeader($header);
+            // $mpdf->SetHTMLHeader($header);
             $mpdf->setAutoBottomMargin = 'stretch';
             $html = $this->load->view('invoice_test', $data, true);
             $mpdf->SetHTMLFooter('
