@@ -681,7 +681,18 @@
                                     <li><a href="appointment/treatmentReport"><i class="fa fa-history"></i><?php echo lang('treatment_history'); ?></a></li>
                                     <li><a href="doctorvisit"><i class="fa fa-clinic-medical"></i><?php echo lang('doctor_visit'); ?></a></li>
                                 </ul>
+                                
                             </li>
+                            
+                            <li>
+                                <a href="prescription/inventory">
+                                    <i class="fa fa-money-check"></i>
+                                    <span>Inventory</span>
+                                </a>
+                            </li>
+                            
+                            
+
                         <?php } ?>
                     <?php } ?>
                     <?php if ($this->ion_auth->in_group(array('admin', 'Accountant', 'Nurse', 'Doctor', 'Laboratorist', 'Receptionist'))) { ?>

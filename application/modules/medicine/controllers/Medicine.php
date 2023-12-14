@@ -10,6 +10,7 @@ class Medicine extends MX_Controller
     {
         parent::__construct();
         $this->load->model('medicine_model');
+        $this->load->model('inventory/inventory_model');
         if (!$this->ion_auth->in_group(array('admin', 'Pharmacist', 'Doctor'))) {
             redirect('home/permission');
         }
@@ -401,6 +402,231 @@ class Medicine extends MX_Controller
             $output = array(
                 "draw" => intval($requestData['draw']),
                 "recordsTotal" => count($this->medicine_model->getMedicine()),
+                "recordsFiltered" => $i,
+                "data" => $info
+            );
+        } else {
+            $output = array(
+                // "draw" => 1,
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => []
+            );
+        }
+
+        echo json_encode($output);
+    }
+
+
+
+    function Itemload()
+    {
+        //for testing 
+        $deptId = 6;
+
+        $item_id = $this->input->post('id');
+        $qty = $this->input->post('qty');
+
+        // $previous_qty = $this->db->get_where('medicine', array('item_id' => $item_id))->row()->quantity;
+        // $previous_qty = $this->db->get_where('inventory', array('item_id' => $item_id, 'department_id' => $deptId))->row()->item_quantity;
+        $previous_qty = $this->inventory_model->getItemByIdAndDeptId($item_id, $deptId)->item_quantity;
+
+        $new_qty = $previous_qty + $qty;
+        $data = array();
+        $data = array('item_quantity' => $new_qty, 'last_add_date' => date('Y-m-d H:i:s'));
+        $this->inventory_model->updateItem($item_id, $deptId, $data);
+        $this->session->set_flashdata('feedback', lang('medicine_loaded'));
+        redirect('prescription/inventory');
+    }
+
+    function editItemByJason()
+    {
+        $id = $this->input->get('id');
+        $data['item'] = $this->inventory_model->getItemById($id);
+        echo json_encode($data);
+    }
+
+    
+    function addNewItem()
+    {
+        //for test
+        $deptId = 6;
+
+
+        $id = $this->input->post('id');
+        $name = $this->input->post('name');
+        $category = $this->input->post('category');
+        $price = $this->input->post('price');
+        
+        $quantity = $this->input->post('quantity');
+        $description = $this->input->post('description');
+        $unit = $this->input->post('unit');
+        
+        $last_add_date = $this->input->post('e_date');
+        $last_out_date = $this->input->post('e_date');
+        if ((empty($id))) {
+            $last_add_date = date('y/m/d');
+        } else {
+            $last_add_date = $this->db->get_where('inventory', array('item_id' => $id,'department_id' => $deptId))->row()->last_add_date;
+        }
+
+        $this->load->library('form_validation');
+        $this->form_validation->set_error_delimiters('<div class="error">', '</div>');
+        // Validating Name Field
+        $this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[100]|xss_clean');
+        // Validating Category Field
+        $this->form_validation->set_rules('category', 'Category', 'trim|required|min_length[1]|max_length[100]|xss_clean'); 
+        // Validating Purchase Price Field
+        $this->form_validation->set_rules('price', 'Purchase Price', 'trim|required|min_length[1]|max_length[100]|xss_clean');
+       
+        
+        // Validating Quantity Field
+        $this->form_validation->set_rules('quantity', 'Quantity', 'trim|required|min_length[1]|max_length[100]|xss_clean');
+        // Validating Generic Name Field
+        $this->form_validation->set_rules('description', 'Description', 'trim|required|min_length[2]|max_length[100]|xss_clean');
+        // Validating Company Name Field
+        
+
+
+        if ($this->form_validation->run() == FALSE) {
+            if (!empty($id)) {
+                redirect('medicine/editMedicine?id=' . $id);
+            } else {
+                $data = array();
+                $data['categories'] = $this->medicine_model->getMedicineCategory();
+                $data['settings'] = $this->settings_model->getSettings();
+                $this->load->view('home/dashboard', $data);
+                $this->load->view('add_new_medicine_view', $data);
+                $this->load->view('home/footer');
+            }
+        } else {
+            $data = array();
+            $data = array(
+                'name' => $name,
+                'category' => $category,
+                'price' => $price,
+                'department_id' => $deptId,
+                'item_quantity' => $quantity,
+                'description' => $description,
+                'last_add_date' => $last_add_date,
+                'last_out_date' => $last_out_date,
+                
+            );
+            if (empty($id)) {
+                $this->inventory_model->insertItem($data);
+                $this->session->set_flashdata('feedback', lang('added'));
+            } else {
+                $this->inventory_model->updateItem($id, $data);
+                $this->session->set_flashdata('feedback', lang('updated'));
+            }
+            redirect('prescription/inventory');
+        }
+    }
+    function getItemList()
+    {
+        $requestData = $_REQUEST;
+        $start = $requestData['start'];
+        $limit = $requestData['length'];
+        $search = $this->input->post('search')['value'];
+
+        $order = $this->input->post("order");
+        // $columns_valid = array(
+        //     "0" => "id",
+        //     "1" => "namee",
+        //     "2" => "category",
+        //     "3" => "box",
+        //     "4" => "price",
+        //     "5" => "s_price",
+        //     "6" => "quantity",
+        //     "7" => "generic",
+        //     "8" => "company",
+        //     "9" => "effects",
+        //     "10" => "e_date",
+        // );
+
+        $columns_valid = array(
+            "0" => "id",
+            "1" => "name",
+            "2" => "category",
+            "3" => "price",
+            "4" => "quantity",
+            "5" => "unit",
+            "6" => "description",
+            "7" => "last_add",
+            "8" => "last_out",
+            // "9" => "effects",
+            // "10" => "e_date",
+        );
+        $values = $this->settings_model->getColumnOrder($order, $columns_valid);
+        $dir = $values[0];
+        $order = $values[1];
+
+        //for test
+        $testData = $this->inventory_model->getInventoryDataByLimit($limit, $start, $order, $dir);
+
+        // if ($limit == -1) {
+        //     if (!empty($search)) {
+        //         $data['items'] = $this->medicine_model->getMedicineBysearch($search, $order, $dir);
+        //     } else {
+        //         $data['items'] = $this->medicine_model->getMedicineWithoutSearch($order, $dir);
+        //     }
+        // } else {
+        //     if (!empty($search)) {
+        //         $data['items'] = $this->medicine_model->getMedicineByLimitBySearch($limit, $start, $search, $order, $dir);
+        //     } else {
+        //         $data['items'] = $this->medicine_model->getMedicineByLimit($limit, $start, $order, $dir);
+        //     }
+        // }
+
+        if ($limit == -1) {
+            if (!empty($search)) {
+                $data['items'] = $this->inventory_model->getInventoryBySearch($search, $order, $dir);
+            } else {
+                $data['items'] = $this->inventory_model->getInventoryWithoutSearch($order, $dir);
+            }
+        } else {
+            if (!empty($search)) {
+                $data['items'] = $this->inventory_model->getInventoryByLimitBySearch($limit, $start, $search, $order, $dir);
+            } else {
+                $data['items'] = $this->inventory_model->getInventoryDataByLimit($limit, $start, $order, $dir);
+            }
+        }
+
+        $i = 0;
+        foreach ($data['items'] as $item) {
+            $i = $i + 1;
+            $settings = $this->settings_model->getSettings();
+            if ($item->quantity <= 0) {
+                $quan = '<p class="os">Stock Out</p>';
+            } else {
+                $quan = $item->quantity;
+            }
+            $load = '<button type="button" class="btn btn-info btn-xs btn_width load" data-toggle="modal" data-id="' . $item->id . '">' . lang('load') . '</button>';
+            $option1 = '<button type="button" class="btn btn-info btn-xs btn_width editbutton" data-toggle="modal" data-id="' . $item->id . '"><i class="fa fa-edit"> </i> ' . lang('edit') . '</button>';
+
+            $option2 = '<a class="btn btn-info btn-xs btn_width delete_button" href="medicine/delete?id=' . $item->id . '" onclick="return confirm(\'Are you sure you want to delete this item?\');"><i class="fa fa-trash"> </i> ' . lang('delete') . '</a>';
+            $info[] = array(
+                $i,
+                $item->name,
+                $item->category,
+                // $item->box,
+                $settings->currency . $item->price,
+                // $settings->currency . $item->s_price,
+                $quan . '<br>' . $load,
+                $item->unit,
+                $item->description,
+                $item->last_add,
+                $item->last_out,
+                $option1 . ' ' . $option2
+                //  $options2
+            );
+        }
+        $totalEntries = count($this->inventory_model->getInventory());
+
+        if (!empty($data['items'])) {
+            $output = array(
+                "draw" => intval($requestData['draw']),
+                "recordsTotal" => $totalEntries,
                 "recordsFiltered" => $i,
                 "data" => $info
             );
