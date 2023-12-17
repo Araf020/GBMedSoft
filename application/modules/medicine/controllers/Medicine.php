@@ -11,6 +11,7 @@ class Medicine extends MX_Controller
         parent::__construct();
         $this->load->model('medicine_model');
         $this->load->model('inventory/inventory_model');
+        $this->load->model('inventory/item_model');
         if (!$this->ion_auth->in_group(array('admin', 'Pharmacist', 'Doctor'))) {
             redirect('home/permission');
         }
@@ -245,6 +246,7 @@ class Medicine extends MX_Controller
         redirect('medicine');
     }
 
+
     public function medicineCategory()
     {
         if (!$this->ion_auth->logged_in()) {
@@ -421,8 +423,8 @@ class Medicine extends MX_Controller
 
     function Itemload()
     {
-        //for testing 
-        $deptId = 6;
+        
+        $deptId = $this->session->userdata('department_id');
 
         $item_id = $this->input->post('id');
         $qty = $this->input->post('qty');
@@ -436,7 +438,7 @@ class Medicine extends MX_Controller
         $data = array('item_quantity' => $new_qty, 'last_add_date' => date('Y-m-d H:i:s'));
         $this->inventory_model->updateItem($item_id, $deptId, $data);
         $this->session->set_flashdata('feedback', lang('medicine_loaded'));
-        redirect('prescription/inventory');
+        redirect('home/inventory');
     }
 
     function editItemByJason()
@@ -449,8 +451,8 @@ class Medicine extends MX_Controller
     
     function addNewItem()
     {
-        //for test
-        $deptId = 6;
+        
+        $deptId = $this->session->userdata('department_id');
 
 
         $id = $this->input->post('id');
@@ -462,8 +464,7 @@ class Medicine extends MX_Controller
         $description = $this->input->post('description');
         $unit = $this->input->post('unit');
         
-        $last_add_date = $this->input->post('e_date');
-        $last_out_date = $this->input->post('e_date');
+       
         if ((empty($id))) {
             $last_add_date = date('y/m/d');
         } else {
@@ -502,25 +503,41 @@ class Medicine extends MX_Controller
         } else {
             $data = array();
             $data = array(
-                'name' => $name,
-                'category' => $category,
-                'price' => $price,
-                'department_id' => $deptId,
+                   
                 'item_quantity' => $quantity,
-                'description' => $description,
                 'last_add_date' => $last_add_date,
-                'last_out_date' => $last_out_date,
-                
+
+            );
+
+            $itemData = array();
+            $itemData = array(
+                'item_name' => $name,
+                'item_type' => $category,
+                'item_price' => $price,
+                'item_description' => $description,
+                'item_unit' => $unit,
             );
             if (empty($id)) {
-                $this->inventory_model->insertItem($data);
+                $item_id = $this->item_model->insertItem($itemData);
+                $this->inventory_model->insertItem($item_id,$data, $deptId);
                 $this->session->set_flashdata('feedback', lang('added'));
             } else {
-                $this->inventory_model->updateItem($id, $data);
+                $this->item_model->updateItem($id, $itemData);
+                $this->inventory_model->updateItem($id, $deptId, $data);
                 $this->session->set_flashdata('feedback', lang('updated'));
             }
-            redirect('prescription/inventory');
+            redirect('home/inventory');
         }
+    }
+    function deleteItem()
+    {
+        $id = $this->input->get('id');
+
+        $deptId = $this->session->userdata('department_id');
+
+        $this->inventory_model->deleteItemFromInventory($id,$deptId);
+        $this->session->set_flashdata('feedback', lang('deleted'));
+        redirect('home/inventory');
     }
     function getItemList()
     {
@@ -554,16 +571,15 @@ class Medicine extends MX_Controller
             "6" => "description",
             "7" => "last_add",
             "8" => "last_out",
-            // "9" => "effects",
+
+            "9" => "department",
             // "10" => "e_date",
         );
         $values = $this->settings_model->getColumnOrder($order, $columns_valid);
         $dir = $values[0];
         $order = $values[1];
 
-        //for test
-        $testData = $this->inventory_model->getInventoryDataByLimit($limit, $start, $order, $dir);
-
+        
         // if ($limit == -1) {
         //     if (!empty($search)) {
         //         $data['items'] = $this->medicine_model->getMedicineBysearch($search, $order, $dir);
@@ -604,7 +620,7 @@ class Medicine extends MX_Controller
             $load = '<button type="button" class="btn btn-info btn-xs btn_width load" data-toggle="modal" data-id="' . $item->id . '">' . lang('load') . '</button>';
             $option1 = '<button type="button" class="btn btn-info btn-xs btn_width editbutton" data-toggle="modal" data-id="' . $item->id . '"><i class="fa fa-edit"> </i> ' . lang('edit') . '</button>';
 
-            $option2 = '<a class="btn btn-info btn-xs btn_width delete_button" href="medicine/delete?id=' . $item->id . '" onclick="return confirm(\'Are you sure you want to delete this item?\');"><i class="fa fa-trash"> </i> ' . lang('delete') . '</a>';
+            $option2 = '<a class="btn btn-info btn-xs btn_width delete_button" href="medicine/deleteItem?id=' . $item->id . '" onclick="return confirm(\'Are you sure you want to delete this item?\');"><i class="fa fa-trash"> </i> ' . lang('delete') . '</a>';
             $info[] = array(
                 $i,
                 $item->name,
@@ -617,6 +633,7 @@ class Medicine extends MX_Controller
                 $item->description,
                 $item->last_add,
                 $item->last_out,
+                $item->department,
                 $option1 . ' ' . $option2
                 //  $options2
             );

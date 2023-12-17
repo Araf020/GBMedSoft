@@ -11,8 +11,8 @@ class Inventory_model extends CI_model {
         $this->load->database();
     }
 
-    function insertItem($data) {
-        $data1 = array('hospital_id' => $this->session->userdata('hospital_id'));
+    function insertItem($item_id,$data, $deptId) {
+        $data1 = array('item_id' => $item_id, 'hospital_id' => $this->session->userdata('hospital_id'), 'department_id' => $deptId);
         $data2 = array_merge($data, $data1);
         
         $this->db->insert('inventory', $data2);
@@ -46,26 +46,39 @@ class Inventory_model extends CI_model {
     }
 
     function updateItem($item_id, $deptId, $data) {
-        //add last_add_date 
-        // $data['last_add_date'] = date('Y-m-d H:i:s');
+        
         $this->db->where('item_id', $item_id);
         $this->db->where('department_id', $deptId);
+        $this->db->where('hospital_id', $this->session->userdata('hospital_id'));
         $this->db->update('inventory', $data);
     }
 
-    function getInvetoryItemByDeptId($id) {
+    function deleteItemFromInventory($item_id, $deptId) {
+        $this->db->where('item_id', $item_id);
+        $this->db->where('department_id', $deptId);
+        $this->db->where('hospital_id', $this->session->userdata('hospital_id'));
+        $this->db->delete('inventory');
+    }
+
+    
+
+    function getInvetoryItemByDeptId($dept_id) {
         $this->db->select('*');
         $this->db->from('inventory');
-        $this->db->where('department_id', $id);
+        $this->db->where('department_id', $dept_id);
         $query = $this->db->get();
         return $query->result();
     }
 
     function getInventoryDataByLimit($limit, $start, $order, $dir) {
-        $this->db->select('l.item_id as id, i.item_name as name, i.item_type as category, i.item_price as price, l.item_quantity as quantity, i.item_unit as unit, i.item_description as description, l.last_add_date as last_add, l.last_out_date as last_out');
+        $dept_id = $this->session->userdata('department_id');
+       
+        $this->db->select('l.item_id as id, i.item_name as name, i.item_type as category, i.item_price as price, l.item_quantity as quantity, i.item_unit as unit, i.item_description as description, l.last_add_date as last_add, l.last_out_date as last_out,d.name as department');
         $this->db->from('inventory as l');
         $this->db->join('item as i', 'i.item_id = l.item_id');
+        $this->db->join('department as d', 'd.id = l.department_id');
         $this->db->where('l.hospital_id', $this->session->userdata('hospital_id'));
+        $this->db->where('l.department_id', $dept_id);
     
         if ($order != null) {
             $this->db->order_by($order, $dir);
@@ -80,16 +93,17 @@ class Inventory_model extends CI_model {
     }
 
     function getInventoryBySearch($search, $order, $dir) {
-        if ($order != null) {
-            $this->db->order_by($order, $dir);
-        } else {
-            $this->db->order_by('id', 'desc');
-        }
-    
-        $this->db->select('l.item_id as id, i.item_name as name, i.item_type as category, i.item_price as price, l.item_quantity as quantity, i.item_unit as unit, i.item_description as description');
+        
+        
+        $dept_id = $this->session->userdata('department_id');
+       
+        $this->db->select('l.item_id as id, i.item_name as name, i.item_type as category, i.item_price as price, l.item_quantity as quantity, i.item_unit as unit, i.item_description as description, l.last_add_date as last_add, l.last_out_date as last_out,d.name as department');
         $this->db->from('inventory as l');
         $this->db->join('item as i', 'i.item_id = l.item_id');
+        $this->db->join('department as d', 'd.id = l.department_id');
         $this->db->where('l.hospital_id', $this->session->userdata('hospital_id'));
+        $this->db->where('l.department_id', $dept_id);
+
         $this->db->like('i.item_name', $search);
         $this->db->or_like('i.item_type', $search);
         $this->db->or_like('i.item_price', $search);
@@ -97,11 +111,33 @@ class Inventory_model extends CI_model {
         $this->db->or_like('i.item_unit', $search);
         $this->db->or_like('i.item_description', $search);
     
+        if ($order != null) {
+            $this->db->order_by($order, $dir);
+        } else {
+            $this->db->order_by('id', 'desc');
+        }
+    
         $query = $this->db->get();
         return $query->result();
     }
 
     function getInventoryByLimitBySearch($limit, $start, $search, $order, $dir) {
+
+        $dept_id = $this->session->userdata('department_id');
+        $this->db->select('l.item_id as id, i.item_name as name, i.item_type as category, i.item_price as price, l.item_quantity as quantity, i.item_unit as unit, i.item_description as description, l.last_add_date as last_add, l.last_out_date as last_out, d.name as department');
+        $this->db->from('inventory as l');
+        $this->db->join('item as i', 'i.item_id = l.item_id');
+        $this->db->join('department as d', 'd.id = l.department_id');
+        $this->db->where('l.hospital_id', $this->session->userdata('hospital_id'));
+        $this->db->where('l.department_id', $dept_id);
+
+        $this->db->like('i.item_name', $search);
+        $this->db->or_like('i.item_type', $search);
+        $this->db->or_like('i.item_price', $search);
+        $this->db->or_like('l.item_quantity', $search);
+        $this->db->or_like('i.item_unit', $search);
+        $this->db->or_like('i.item_description', $search);
+    
         if ($order != null) {
             $this->db->order_by($order, $dir);
         } else {
@@ -110,26 +146,23 @@ class Inventory_model extends CI_model {
     
         $this->db->limit($limit, $start);
     
-        $this->db->select('l.item_id as id, i.item_name as name, i.item_type as category, i.item_price as price, l.item_quantity as quantity, i.item_unit as unit, i.item_description as description');
-        $this->db->from('inventory as l');
-        $this->db->join('item as i', 'i.item_id = l.item_id');
-        $this->db->where('l.hospital_id', $this->session->userdata('hospital_id'));
-        $this->db->like('i.item_name', $search);
-        $this->db->or_like('i.item_type', $search);
-        $this->db->or_like('i.item_price', $search);
-        $this->db->or_like('l.item_quantity', $search);
-        $this->db->or_like('i.item_unit', $search);
-        $this->db->or_like('i.item_description', $search);
-    
         $query = $this->db->get();
         return $query->result();
+
+
+
+        
     }
 
     function getInventoryWithoutSearch($order, $dir) {
-        $this->db->select('l.item_id as id, i.item_name as name, i.item_type as category, i.item_price as price, l.item_quantity as quantity, i.item_unit as unit, i.item_description as description');
+
+         $dept_id = $this->session->userdata('department_id');
+        $this->db->select('l.item_id as id, i.item_name as name, i.item_type as category, i.item_price as price, l.item_quantity as quantity, i.item_unit as unit, i.item_description as description, l.last_add_date as last_add, l.last_out_date as last_out, d.name as department');
         $this->db->from('inventory as l');
         $this->db->join('item as i', 'i.item_id = l.item_id');
+        $this->db->join('department as d', 'd.id = l.department_id');
         $this->db->where('l.hospital_id', $this->session->userdata('hospital_id'));
+        $this->db->where('l.department_id', $dept_id);
     
         if ($order != null) {
             $this->db->order_by($order, $dir);

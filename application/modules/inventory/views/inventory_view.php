@@ -26,7 +26,7 @@
                     <table class="table table-striped table-hover table-bordered" id="editable-sample1">
                         <thead>
                             <tr>
-                                <th> <?php echo lang('id'); ?></th>
+                                <th> SL</th>
                                 <th> <?php echo lang('name'); ?></th>
                                 <th> <?php echo lang('category'); ?></th>
                                 
@@ -37,6 +37,7 @@
                                 <th> Description</th>
                                 <th> Last Added </th>
                                 <th> Last Out </th>
+                                <th> Department </th>
                                 <th> <?php echo lang('options'); ?></th>
                             </tr>
                         </thead>
@@ -70,10 +71,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">  <?php echo lang('add_medicine'); ?></h4>
+                <h4 class="modal-title">  Add Item </h4>
             </div>
             <div class="modal-body row">
-                <form role="form" action="medicine/addNewMedicine" class="clearfix" method="post" enctype="multipart/form-data">
+            <form role="form" action="medicine/addNewItem" class="clearfix" method="post" enctype="multipart/form-data">
+            <!-- <form role="form" id="editMedicineForm" class="clearfix" action="medicine/addNewItem" method="post" enctype="multipart/form-data"> -->
                     <div class="form-group col-md-5">
                         <label for="exampleInputEmail1"> <?php echo lang('name'); ?> &ast;</label>
                         <input type="text" class="form-control" name="name"  value='' placeholder="" required="">
@@ -81,15 +83,12 @@
                     <div class="form-group col-md-5">
                         <label for="exampleInputEmail1"> <?php echo lang('category'); ?> &ast;</label>
                         <select class="form-control m-bot15" name="category" value='' required="">
-                            <?php foreach ($categories as $category) { ?>
-                                <option value="<?php echo $category->category; ?>" <?php
-                                if (!empty($medicine->category)) {
-                                    if ($category->category == $medicine->category) {
-                                        echo 'selected';
-                                    }
-                                }
-                                ?> > <?php echo $category->category; ?> </option>
-                                    <?php } ?> 
+                            <option value="">Select Category</option>
+                            <option value="stationary">Stationary</option>
+                            <option value="reagent">Reagent</option>
+                            <option value="accesories">Medical Accessories</option>
+                            <option value="equipment">Medical equipment</option>
+                            <option value="furniture">Furniture</option>
                         </select>
                     </div>
 
@@ -97,37 +96,36 @@
                         <label for="exampleInputEmail1"> <?php echo lang('p_price'); ?> &ast;</label>
                         <input type="text" class="form-control" name="price"  value='' placeholder="" required="">
                     </div>
-                    <div class="form-group col-md-3">
-                        <label for="exampleInputEmail1"> <?php echo lang('s_price'); ?> &ast;</label>
-                        <input type="text" class="form-control" name="s_price"  value='' placeholder="" required="">
-                    </div>
+                    
                     <div class="form-group col-md-3">
                         <label for="exampleInputEmail1"> <?php echo lang('quantity'); ?> &ast;</label>
                         <input type="text" class="form-control" name="quantity"  value='' placeholder="" required="">
                     </div>
                     <div class="form-group col-md-5">
-                        <label for="exampleInputEmail1"> <?php echo lang('generic_name'); ?> &ast;</label>
-                        <input type="text" class="form-control" name="generic"  value='' placeholder="" required="">
+                        <label for="exampleInputEmail1"> Unit &ast;</label>
+                        <input type="text" class="form-control" name="unit"  value='' placeholder="" required="">
                     </div>
-                    <div class="form-group col-md-5">
-                        <label for="exampleInputEmail1"> <?php echo lang('company'); ?></label>
-                        <input type="text" class="form-control" name="company"  value='' placeholder="">
-                    </div>
-                    <div class="form-group col-md-5">
-                        <label for="exampleInputEmail1"> <?php echo lang('effects'); ?></label>
-                        <input type="text" class="form-control" name="effects"  value='' placeholder="">
-                    </div>
+                    
+                    
                     <div class="form-group col-md-4"> 
-                        <label for="exampleInputEmail1"> <?php echo lang('store_box'); ?></label>
-                        <input type="text" class="form-control" name="box"  value='' placeholder="">
+                        <label for="description">description</label>
+                        <input type="text" class="form-control" name="description"  value='' placeholder="">
+                    </div>
+                    <!-- <div class="form-group col-md-3">
+                        <label for="exampleInputEmail1"> Last Add Date &ast;</label>
+                        <input type="text" class="form-control default-date-picker readonly" name="last_add_date"  value='' placeholder="" required="">
                     </div>
                     <div class="form-group col-md-3">
-                        <label for="exampleInputEmail1"> <?php echo lang('expiry_date'); ?> &ast;</label>
-                        <input type="text" class="form-control default-date-picker readonly" name="e_date"  value='' placeholder="" required="">
-                    </div>
+                        <label for="exampleInputEmail1"> Last Out Date &ast;</label>
+                        <input type="text" class="form-control default-date-picker readonly" name="last_out_date"  value='' placeholder="" required="">
+                    </div> -->
+                    <input type="hidden" name="id" value=''>
                     <div class="form-group col-md-12">
                         <button type="submit" name="submit" class="btn btn-info pull-right"> <?php echo lang('submit'); ?></button>
                     </div>
+
+
+
                 </form>
 
             </div>
@@ -187,14 +185,14 @@
                         <label for="description">description</label>
                         <input type="text" class="form-control" name="description"  value='' placeholder="">
                     </div>
-                    <div class="form-group col-md-3">
+                    <!-- <div class="form-group col-md-3">
                         <label for="exampleInputEmail1"> Last Add Date &ast;</label>
                         <input type="text" class="form-control default-date-picker readonly" name="last_add_date"  value='' placeholder="" required="">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="exampleInputEmail1"> Last Out Date &ast;</label>
                         <input type="text" class="form-control default-date-picker readonly" name="last_out_date"  value='' placeholder="" required="">
-                    </div>
+                    </div> -->
                     <input type="hidden" name="id" value=''>
                     <div class="form-group col-md-12">
                         <button type="submit" name="submit" class="btn btn-info pull-right"> <?php echo lang('submit'); ?></button>
@@ -267,7 +265,8 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (response) {
                 "use strict";
-                $('#editMedicineForm').find('[name="id"]').val(response.item.item_id).end();
+                console.log(response);
+                $('#editMedicineForm').find('[name="id"]').val(response.item.id).end();
                 $('#editMedicineForm').find('[name="name"]').val(response.item.name).end();
                 // $('#editMedicineForm').find('[name="box"]').val(response.item.box).end();
                 $('#editMedicineForm').find('[name="price"]').val(response.item.price).end();
@@ -276,8 +275,8 @@ $(document).ready(function () {
                 $('#editMedicineForm').find('[name="description"]').val(response.item.description).end();
                 // $('#editMedicineForm').find('[name="company"]').val(response.item.company).end();
                 // $('#editMedicineForm').find('[name="effects"]').val(response.item.effects).end();
-                $('#editMedicineForm').find('[name="last_add_date"]').val(response.item.last_add_date).end();
-                $('#editMedicineForm').find('[name="last_out_date"]').val(response.item.last_out_date).end();
+                // $('#editMedicineForm').find('[name="last_add_date"]').val(response.item.last_add_date).end();
+                // $('#editMedicineForm').find('[name="last_out_date"]').val(response.item.last_out_date).end();
             }
         })
     });
@@ -316,11 +315,11 @@ $(document).ready(function () {
                 "<'row'<'col-sm-5'i><'col-sm-7'p>>",
 
         buttons: [
-            {extend: 'copyHtml5', exportOptions: {columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], }},
-            {extend: 'excelHtml5', exportOptions: {columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], }},
-            {extend: 'csvHtml5', exportOptions: {columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], }},
-            {extend: 'pdfHtml5', exportOptions: {columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], }},
-            {extend: 'print', exportOptions: {columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], }},
+            {extend: 'copyHtml5', exportOptions: {columns: [1, 2, 3, 4, 5, 6, 7, 8,9], }},
+            {extend: 'excelHtml5', exportOptions: {columns: [1, 2, 3, 4, 5, 6, 7, 8,9], }},
+            {extend: 'csvHtml5', exportOptions: {columns: [1, 2, 3, 4, 5, 6, 7, 8,9], }},
+            {extend: 'pdfHtml5', exportOptions: {columns: [1, 2, 3, 4, 5, 6, 7, 8,9], }},
+            {extend: 'print', exportOptions: {columns: [1, 2, 3, 4, 5, 6, 7, 8,9], }},
         ],
         aLengthMenu: [
             [10, 25, 50, 100, -1],

@@ -685,7 +685,7 @@
                             </li>
                             
                             <li>
-                                <a href="prescription/inventory">
+                                <a href="home/inventory">
                                     <i class="fa fa-money-check"></i>
                                     <span>Inventory</span>
                                 </a>
