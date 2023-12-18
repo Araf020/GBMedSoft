@@ -74,7 +74,7 @@
                 <h4 class="modal-title">  Add Item </h4>
             </div>
             <div class="modal-body row">
-            <form role="form" action="medicine/addNewItem?flag=e" class="clearfix" method="post" enctype="multipart/form-data">
+            <form id="addItemForm" role="form" action="medicine/addNewItem?flag=e" class="clearfix" method="post" enctype="multipart/form-data">
             <!-- <form role="form" id="editMedicineForm" class="clearfix" action="medicine/addNewItem" method="post" enctype="multipart/form-data"> -->
                     
                     <div class="form-group col-md-4">
@@ -451,7 +451,7 @@ function fetchListItems(query, callback) {
             // Call your method here with the item id
             console.log('Item ID clicked:', itemId);
             $.ajax({
-            url: 'medicine/editItemByJason?id=' + iid,
+            url: 'medicine/editItemByJason?id=' + itemId+'&flag=add',
             method: 'GET',
             data: '',
             dataType: 'json',
@@ -463,7 +463,7 @@ function fetchListItems(query, callback) {
                 // $('#addItemForm').find('[name="box"]').val(response.item.box).end();
                 $('#addItemForm').find('[name="price"]').val(response.item.price).end();
                 $('#addItemForm').find('[name="unit"]').val(response.item.unit).end();
-                $('#addItemForm').find('[name="quantity"]').val(response.item.quantity).end();
+                // $('#addItemForm').find('[name="quantity"]').val(response.item.quantity).end();
                 $('#addItemForm').find('[name="description"]').val(response.item.description).end();
                 // $('#addItemForm').find('[name="company"]').val(response.item.company).end();
                 // $('#addItemForm').find('[name="effects"]').val(response.item.effects).end();

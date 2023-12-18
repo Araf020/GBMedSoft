@@ -24,4 +24,24 @@ class Item_model extends CI_model {
         return $this->db->insert_id();
         
     }
+
+    function getAllItem()
+    {
+        $this->db->select('item_id as id, item_name as name');
+        $this->db->from('item');
+        // $this->db->where('hospital_id', $this->session->userdata('hospital_id'));
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    function getItemById($itemid)
+    {
+        $this->db->select('item_id as id, item_name as name, item_type as category, item_price as price, item_unit as unit, item_description as description');
+        $this->db->from('item');
+        $this->db->where('item_id', $itemid);
+        // $this->db->where('hospital_id', $this->session->userdata('hospital_id'));
+
+        $query = $this->db->get();
+        return $query->row();
+    }
 }

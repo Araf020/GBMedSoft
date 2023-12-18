@@ -178,20 +178,13 @@ class Home extends MY_Controller {
 
     public function inventory() {   
        
-        $data['medicines'] = $this->medicine_model->getMedicine();
-        $data['categories'] = $this->medicine_model->getMedicineCategory();
+  
         $data['settings'] = $this->settings_model->getSettings();
-        $data['items'] = $this->inventory_model->getInvetoryItemByDeptId(6);
 
-        
-        if ($this->ion_auth->in_group(array('Doctor'))) {
-            $current_user = $this->ion_auth->get_user_id();
-            $doctor_id = $this->db->get_where('doctor', array('ion_user_id' => $current_user))->row()->id;
-        }
-        // $data['prescriptions'] = $this->prescription_model->getPrescriptionByDoctorId($doctor_id);
-       $userdata = $this->session->userdata;
-        $hospital_id = $this->session->userdata('hospital_id');
-       $department_id = $this->session->userdata('department_id');
+        // $department_id = $this->session->userdata('department_id');
+        // $data['items'] = $this->inventory_model->getInvetoryItemByDeptId($department_id);
+
+       
 
         $this->load->view('home/dashboard', $data); 
         $this->load->view('inventory/inventory_view', $data);

@@ -684,12 +684,7 @@
                                 
                             </li>
                             
-                            <li>
-                                <a href="home/inventory">
-                                    <i class="fa fa-money-check"></i>
-                                    <span>Inventory</span>
-                                </a>
-                            </li>
+                            
                             
                             
 
@@ -1006,6 +1001,12 @@
                                     <li><a href="lab/template"><i class="fa fa-plus-circle"></i><?php echo lang('template'); ?></a></li>
                                     <li><a href="macro"><i class="fa fa-file-medical"></i><?php echo lang('macro'); ?></a></li>
                                 </ul>
+                            </li>
+                            <li class="sub-menu">
+                                <a href="home/inventory">
+                                    <i class="fa fa-money-check"></i>
+                                    <span>Inventory</span>
+                                </a>
                             </li>
                         <?php } ?>
                     <?php } ?>

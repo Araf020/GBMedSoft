@@ -21,6 +21,7 @@ class Inventory_model extends CI_model {
     function getInventory() {
         $this->db->select('*');
         $this->db->from('inventory');
+        $this->db->where('department_id', $this->session->userdata('department_id'));
         $this->db->where('hospital_id', $this->session->userdata('hospital_id'));
         $query = $this->db->get();
         return $query->result();
@@ -31,6 +32,9 @@ class Inventory_model extends CI_model {
         $this->db->from('inventory as l');
         $this->db->join('item as i', 'i.item_id = l.item_id');
         $this->db->where('i.item_id', $itemid);
+        $this->db->where('l.department_id', $this->session->userdata('department_id'));
+        $this->db->where('l.hospital_id', $this->session->userdata('hospital_id'));
+
         $query = $this->db->get();
         return $query->row();
     }
@@ -66,6 +70,7 @@ class Inventory_model extends CI_model {
         $this->db->select('*');
         $this->db->from('inventory');
         $this->db->where('department_id', $dept_id);
+        $this->db->where('hospital_id', $this->session->userdata('hospital_id'));
         $query = $this->db->get();
         return $query->result();
     }
@@ -128,7 +133,7 @@ class Inventory_model extends CI_model {
         $this->db->from('inventory as l');
         $this->db->join('item as i', 'i.item_id = l.item_id');
         $this->db->join('department as d', 'd.id = l.department_id');
-        $this->db->where('l.hospital_id', $this->session->userdata('hospital_id'));
+        // $this->db->where('l.hospital_id', $this->session->userdata('hospital_id'));
         $this->db->where('l.department_id', $dept_id);
 
         $this->db->like('i.item_name', $search);
@@ -147,7 +152,8 @@ class Inventory_model extends CI_model {
         $this->db->limit($limit, $start);
     
         $query = $this->db->get();
-        return $query->result();
+        $result = $query->result();
+        return $result;
 
 
 
