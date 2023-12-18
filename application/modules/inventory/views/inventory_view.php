@@ -89,11 +89,14 @@
                         <label for="exampleInputEmail1"> <?php echo lang('category'); ?> &ast;</label>
                         <select class="form-control m-bot15" name="category" value='' required="">
                             <option value="">Select Category</option>
-                            <option value="stationary">Stationary</option>
                             <option value="reagent">Reagent</option>
                             <option value="accesories">Medical Accessories</option>
                             <option value="equipment">Medical equipment</option>
+                            <option value="electronic">Electronic</option>
+                            <option value="appliances">Appliances</option>
+                            <option value="stationary">Stationary</option>
                             <option value="furniture">Furniture</option>
+                            <option value="other">Other</option>
                         </select>
                     </div>
 
