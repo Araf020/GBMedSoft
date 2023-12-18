@@ -74,13 +74,18 @@
                 <h4 class="modal-title">  Add Item </h4>
             </div>
             <div class="modal-body row">
-            <form role="form" action="medicine/addNewItem" class="clearfix" method="post" enctype="multipart/form-data">
+            <form role="form" action="medicine/addNewItem?flag=e" class="clearfix" method="post" enctype="multipart/form-data">
             <!-- <form role="form" id="editMedicineForm" class="clearfix" action="medicine/addNewItem" method="post" enctype="multipart/form-data"> -->
-                    <div class="form-group col-md-5">
+                    
+                    <div class="form-group col-md-4">
                         <label for="exampleInputEmail1"> <?php echo lang('name'); ?> &ast;</label>
-                        <input type="text" class="form-control" name="name"  value='' placeholder="" required="">
+                        <input id="autocompleteTextbox" type="text" class="form-control" name="name"  value='' placeholder="" required="">
+                        <div id="autocompleteList" class="autocomplete-list"></div>
                     </div>
-                    <div class="form-group col-md-5">
+                    <!-- <input type="text" class="form-control" id="autocompleteTextbox"> -->
+                    
+
+                    <div class="form-group col-md-4">
                         <label for="exampleInputEmail1"> <?php echo lang('category'); ?> &ast;</label>
                         <select class="form-control m-bot15" name="category" value='' required="">
                             <option value="">Select Category</option>
@@ -244,6 +249,33 @@
     </div><!-- /.modal-dialog -->
 </div>
 
+<div class="modal fade" id="myModal4" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">  Remove Item </h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" id="editMedicineForm2" class="clearfix" action="medicine/removeItem" method="post" enctype="multipart/form-data">
+
+                    <div class="form-group">
+                        <label for="exampleInputEmail1"> Quantity &ast;</label>
+                        <input type="text" class="form-control" name="qty"  value='' placeholder="" required="">
+                    </div>
+
+                    <input type="hidden" name="id" value=''>
+
+                    <div class="form-group">
+                        <button type="submit" name="submit" class="btn btn-info pull-right"> <?php echo lang('submit'); ?></button>
+                    </div>
+                </form>
+
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
 
 <script src="common/js/codearistos.min.js"></script>
 <script type="text/javascript">var language = "<?php echo $this->language; ?>";</script>
@@ -279,6 +311,18 @@ $(document).ready(function () {
                 // $('#editMedicineForm').find('[name="last_out_date"]').val(response.item.last_out_date).end();
             }
         })
+    });
+
+    $(".table").on("click", ".removebutton", function () {
+        "use strict";
+        var iid = $(this).attr('data-id');
+        $('#editMedicineForm2').trigger("reset");
+        $('#myModal4').modal('show');
+
+
+        $('#editMedicineForm2').find('[name="id"]').val(iid).end();
+
+        
     });
 });
 
@@ -342,6 +386,102 @@ $(document).ready(function () {
     $(".flashmessage").delay(3000).fadeOut(100);
 });
 
+var staticList = [
+    
+];
 
+function getItems()
+{
+    $.ajax({
+        url: "medicine/getItems",
+        type: 'GET',
+        // data: {query: query},
+        dataType: 'json',
+        success: function (response) {
+            // console.log(response);
+            staticList = response;
+        }
+    })
+}
+getItems();
+
+function fetchListItems(query, callback) {
+    // This is where you would make an actual AJAX request to your server
+    // and retrieve the list items based on the query.
+    // For simplicity, let's use a static list here.
+    //call medicine/getItems using ajax
+
+  const filteredList = staticList.filter(item => item.name.toLowerCase().includes(query.toLowerCase()));
+  callback(filteredList);
+  }
+
+  $(document).ready(function() {
+    const textbox = $('#autocompleteTextbox');
+    const autocompleteList = $('#autocompleteList');
+
+    textbox.on('input', function() {
+        const query = $(this).val();
+
+        fetchListItems(query, function(items) {
+        displayListItems(items);
+        });
+    });
+
+    function displayListItems(items) {
+        autocompleteList.empty();
+
+        if (items.length === 0) {
+        autocompleteList.hide();
+        return;
+        }
+
+        items.forEach(item => {
+            const listItem = $('<div class="autocomplete-item">' + item.name + '</div>');
+            listItem.on('click', function() {
+                handleItemClick(item.id);
+                textbox.val(item.name);
+                autocompleteList.hide();
+            });
+            autocompleteList.append(listItem);
+        });
+
+        autocompleteList.show();
+
+        function handleItemClick(itemId) {
+            // Call your method here with the item id
+            console.log('Item ID clicked:', itemId);
+            $.ajax({
+            url: 'medicine/editItemByJason?id=' + iid,
+            method: 'GET',
+            data: '',
+            dataType: 'json',
+            success: function (response) {
+                "use strict";
+                console.log(response);
+                $('#addItemForm').find('[name="id"]').val(response.item.id).end();
+                $('#addItemForm').find('[name="name"]').val(response.item.name).end();
+                // $('#addItemForm').find('[name="box"]').val(response.item.box).end();
+                $('#addItemForm').find('[name="price"]').val(response.item.price).end();
+                $('#addItemForm').find('[name="unit"]').val(response.item.unit).end();
+                $('#addItemForm').find('[name="quantity"]').val(response.item.quantity).end();
+                $('#addItemForm').find('[name="description"]').val(response.item.description).end();
+                // $('#addItemForm').find('[name="company"]').val(response.item.company).end();
+                // $('#addItemForm').find('[name="effects"]').val(response.item.effects).end();
+                // $('#addItemForm').find('[name="last_add_date"]').val(response.item.last_add_date).end();
+                // $('#addItemForm').find('[name="last_out_date"]').val(response.item.last_out_date).end();
+            }
+        })
+
+        }
+    }
+
+    // Hide autocomplete list on outside click
+    $(document).on('click', function(event) {
+        if (!$(event.target).closest('#autocompleteList').length && !$(event.target).is('#autocompleteTextbox')) {
+        autocompleteList.hide();
+        }
+    });
+
+  });
 
 </script>
