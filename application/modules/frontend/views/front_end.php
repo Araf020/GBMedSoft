@@ -97,9 +97,9 @@ $title = explode(' ', $settings->title);
                 }
                 ?>
                 <a href="<?php echo $link; ?>" target="_blank" class="c-nav-menu__nav-link mr-s is-login-button w-nav-link"><?php echo $link_lang; ?></a>
-                <a href="frontend#book" class="c-button__secondary is--small w-inline-block" data-ix="button-icon">
+                <!-- <a href="frontend#book" class="c-button__secondary is--small w-inline-block" data-ix="button-icon">
                     <div class="c-button__text is--purple is--small"><?php echo lang('register_hospital'); ?></div><img src="front-end/assets/5f16ec24d8bd7908a5d24625/5f3d46263a5ec7752b5a63df_Arrow_purple.svg" width="32" height="32" alt="" class="c-button__icon is--small" />
-                </a>
+                </a> -->
                 <script type="text/javascript">
                     function googleTranslateElementInit() {
                         if ($(window).width() < 760) {
@@ -186,9 +186,9 @@ $title = explode(' ', $settings->title);
                 <div id="w-node-_4781c85d-0ce2-032e-fd4d-6f516a5efda1-fd5d4922" class="c-hero__copy">
                     <div id="w-node-_4e4fa717-af22-91dc-7b5b-71872c988dde-fd5d4922" class="c-hero__container w-clearfix">
                         <h1 class="c-heading-1"><?php echo $slide->text1; ?><span class="is--bold is--purple c-heading-1"></span></h1>
-                        <p class="c-paragraph is--large"><?php echo $slide->text2; ?></p><a href="frontend#book" class="c-button__primary w-inline-block" data-ix="button-icon">
+                        <!-- <p class="c-paragraph is--large"><?php echo $slide->text2; ?></p><a href="frontend#book" class="c-button__primary w-inline-block" data-ix="button-icon">
                             <div class="c-button__text"><?php echo lang('register_hospital'); ?> </div><img src="front-end/assets/5f16ec24d8bd7908a5d24625/5f3d419ec0cff23f8b7b1a45_Arrow_white.svg" width="48" height="48" alt="" class="c-button__icon is--large" />
-                        </a>
+                        </a> -->
                     </div>
                 </div>
             </div>
@@ -603,9 +603,9 @@ $title = explode(' ', $settings->title);
                 <div id="w-node-dc6d6587-dc91-094d-f21a-04d2bc4c8090-fd5d4922" class="l-container">
                     <h2 class="c-heading-2"><?php echo $settings->team_title; ?></h2>
                     <p class="c-paragraph is--centermobile"><?php echo $settings->team_description; ?><br /></p>
-                    <a href="frontend#book" class="c-button__secondary extra--space w-inline-block" data-ix="button-icon">
+                    <!-- <a href="frontend#book" class="c-button__secondary extra--space w-inline-block" data-ix="button-icon">
                         <div class="c-button__text is--purple"><?php echo lang('register_hospital'); ?> <?php echo lang('now'); ?></div><img src="front-end/assets/5f16ec24d8bd7908a5d24625/5f3d46263a5ec7752b5a63df_Arrow_purple.svg" width="32" height="32" alt="" class="c-button__icon is--large" />
-                    </a>
+                    </a> -->
                 </div>
 
                 <div id="w-node-_3d519ce2-0b41-21a9-a84a-aeb7e9fbb872-fd5d4922" class="cs-quote c-card c-card-mp">
@@ -617,10 +617,10 @@ $title = explode(' ', $settings->title);
                         </div>
                     </div>
                 </div>
-                <div id="w-node-_86c0b435-72b0-dbc6-df01-3314eb98eefd-fd5d4922" class="c-quote__author__name c-quote__cs"><span class="text-span-2">
+                <!-- <div id="w-node-_86c0b435-72b0-dbc6-df01-3314eb98eefd-fd5d4922" class="c-quote__author__name c-quote__cs"><span class="text-span-2">
                         <?php echo $settings->team_commentator_name; ?></span>
                     <?php echo $settings->team_commentator_designation; ?>
-                </div>
+                </div> -->
             </div>
         </div>
 
@@ -754,7 +754,7 @@ $title = explode(' ', $settings->title);
 
                             <a href="frontend#package" class="c-footer-menu__nav-link"><?php echo lang('package'); ?></a>
                             <a href="frontend#contact" class="c-footer-menu__nav-link"><?php echo lang('contact'); ?> </a>
-                            <a href="frontend#book" class="c-footer-menu__nav-link"><?php echo lang('register_hospital'); ?> </a>
+                            <!-- <a href="frontend#book" class="c-footer-menu__nav-link"><?php echo lang('register_hospital'); ?> </a> -->
                         </li>
                     </ul>
                     <ul id="w-node-fc700cf1-12f3-3b80-fcc9-a265950b4a6d-2df6d2bd" role="list" class="c-footer-list w-list-unstyled">
@@ -773,7 +773,7 @@ $title = explode(' ', $settings->title);
 
                         <li class="c-footer-list-item">
                             <a href="frontend#book" class="c-button__primary w-inline-block" data-ix="button-icon">
-                                <div class="c-button__text"><?php echo lang('register_hospital'); ?> </div>
+                                <!-- <div class="c-button__text"><?php echo lang('register_hospital'); ?> </div> -->
                                 <img src="front-end/assets/5f16ec24d8bd7908a5d24625/5f3d419ec0cff23f8b7b1a45_Arrow_white.svg" width="48" height="48" alt="" class="c-button__icon is--large" />
                             </a>
                         </li>
