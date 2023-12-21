@@ -16,6 +16,47 @@
                         </div>
                     </a>
                 </div>
+                <style>
+                    
+
+                    #logModal {
+                        display: none;
+                        position: center;
+                        z-index: 1;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        height: 100%;
+                        overflow: auto;
+                        background-color: rgba(0, 0, 0, 0.7);
+                    }
+
+                    .logmodal-content {
+                        background-color: #fefefe;
+                        margin: 15% auto;
+                        padding: 20px;
+                        border: 1px solid #888;
+                        width: 45%;
+                    }
+                    
+
+
+                    .close {
+                        color: #aaa;
+                        float: right;
+                        font-size: 28px;
+                        font-weight: bold;
+                    }
+
+                    .logs {
+                        list-style-type: none;
+                        padding: 0;
+                    }
+
+                    .log-item {
+                        margin-bottom: 10px;
+                    }
+                </style>
             </header>
             
 
@@ -279,7 +320,15 @@
     </div><!-- /.modal-dialog -->
 </div>
 
-
+<div id="logModal" class="modal">
+    <div class="logmodal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>#Item Log</h2>
+        <ul class="logs" id="logList">
+            <!-- Log items will be dynamically added here using JavaScript -->
+        </ul>
+    </div>
+</div>
 <script src="common/js/codearistos.min.js"></script>
 <script type="text/javascript">var language = "<?php echo $this->language; ?>";</script>
 <!-- <script src="common/extranal/js/medicine/medicine.js"></script> -->
@@ -327,6 +376,47 @@ $(document).ready(function () {
 
         
     });
+
+    $(".table").on("click", ".log", function () {
+        "use strict";
+        var iid = $(this).attr('data-id');
+        var logdata = [];
+        $.ajax({
+            url: 'medicine/getLogsByItemId?id=' + iid,
+            method: 'GET',
+            data: '',
+            dataType: 'json',
+            success: function (response) {
+                "use strict";
+                console.log(response);
+                
+                logdata =response.logs;
+                var logs = []
+                logdata.forEach(entry => {
+                    const logMessage = `#${entry.id}: ${entry.itemname} is ${entry.remarks.toLowerCase()} [${entry.quantity}] on ${entry.timestamp} : previously: [${entry.previous_qty}]`;
+                    logs.push(logMessage);
+                });
+                if(logs.length == 0){
+                    logs.push("No logs found for this item");
+                }
+                
+                openModal(logs);
+            }
+        })
+
+        // process logdata as a list like this
+        // logs = [
+        //     "#123: Item1 is added [5] on 2023-01-01 : previously: [0]",
+        //     "#456: Item2 is added [10] on 2023-01-02 : previously: [2]",
+        //     "#789: Item3 is added [8] on 2023-01-03 : previously: [5]"
+        // ];
+
+        
+
+        
+    });
+
+   
 });
 
 $(document).ready(function () {
@@ -486,5 +576,50 @@ function fetchListItems(query, callback) {
     });
 
   });
+
+</script>
+
+<script>
+    function openModal(logs) {
+        // Dummy log data
+
+       
+        //  logs = [
+        //     "#123: Item1 is added [5] on 2023-01-01 : previously: [0]",
+        //     "#456: Item2 is added [10] on 2023-01-02 : previously: [2]",
+        //     "#789: Item3 is added [8] on 2023-01-03 : previously: [5]"
+        // ];
+
+        // Get modal and log list elements
+        const modal = document.getElementById("logModal");
+        const logList = document.getElementById("logList");
+
+        // Clear previous log items
+        logList.innerHTML = "";
+
+        // Populate log items
+        logs.forEach(log => {
+            const logItem = document.createElement("li");
+            logItem.className = "log-item";
+            logItem.textContent = log;
+            logList.appendChild(logItem);
+        });
+
+        // Display the modal
+        modal.style.display = "block";
+    }
+
+    function closeModal() {
+        // Hide the modal
+        document.getElementById("logModal").style.display = "none";
+    }
+
+    // Close the modal if the user clicks outside of it
+    window.onclick = function(event) {
+        const modal = document.getElementById("logModal");
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    };
 
 </script>

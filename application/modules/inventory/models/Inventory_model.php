@@ -180,6 +180,19 @@ class Inventory_model extends CI_model {
         return $query->result();
     }
     
+
+    // function getItemQuantity($itemid, $dept_id)
+    // {
+    //     $this->db->select('item_quantity as quantity');
+    //     $this->db->from('inventory');
+    //     $this->db->where('item_id', $itemid);
+    //     $this->db->where('department_id', $dept_id);
+    //     $this->db->where('hospital_id', $this->session->userdata('hospital_id'));
+
+    //     $query = $this->db->get();
+    //     //return the quantity value
+    //     return $query->row();
+    // }
     
     
     

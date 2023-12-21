@@ -44,4 +44,6 @@ class Item_model extends CI_model {
         $query = $this->db->get();
         return $query->row();
     }
+
+   
 }

@@ -12,6 +12,7 @@ class Medicine extends MX_Controller
         $this->load->model('medicine_model');
         $this->load->model('inventory/inventory_model');
         $this->load->model('inventory/item_model');
+        $this->load->model('inventory/inventory_log');
         if (!$this->ion_auth->in_group(array('admin', 'Pharmacist', 'Doctor','Laboratorist'))) {
             redirect('home/permission');
         }
@@ -425,6 +426,7 @@ class Medicine extends MX_Controller
     {
         
         $deptId = $this->session->userdata('department_id');
+        $user_id = $this->session->userdata('user_id');
 
         $item_id = $this->input->post('id');
         $qty = $this->input->post('qty');
@@ -437,14 +439,18 @@ class Medicine extends MX_Controller
         $data = array();
         $data = array('item_quantity' => $new_qty, 'last_add_date' => date('Y-m-d H:i:s'));
         $this->inventory_model->updateItem($item_id, $deptId, $data);
-        $this->session->set_flashdata('feedback', 'item loaded');
+        $log_data = array();
+        $log_data = array('item_id' => $item_id, 'dept_id' => $deptId, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $qty, 'remarks' => 'Item Loaded', 'previous_qty' => $previous_qty, 'update_user' => $user_id);
+        // $this->session->set_flashdata('feedback', 'item loaded');
+        // log this action
+        $this->inventory_log->insertLog($log_data);
         redirect('home/inventory');
     }
 
     function removeItem()
     {
         $deptId = $this->session->userdata('department_id');
-
+        $user_id = $this->session->userdata('user_id');
         $item_id = $this->input->post('id');
         $qty = $this->input->post('qty');
 
@@ -457,7 +463,18 @@ class Medicine extends MX_Controller
         $data = array('item_quantity' => $new_qty, 'last_out_date' => date('Y-m-d H:i:s'));
         $this->inventory_model->updateItem($item_id, $deptId, $data);
         // $this->session->set_flashdata('feedback', 'item removed');
+        $log_data = array();
+        $log_data = array('item_id' => $item_id, 'dept_id' => $deptId, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $qty, 'remarks' => 'Taken Out', 'previous_qty' => $previous_qty, 'update_user' => $user_id);
+       
+        // log this action
+        $this->inventory_log->insertLog($log_data);
         redirect('home/inventory');
+    }
+    function getLogsByItemId()
+    {
+        $item_id = $this->input->get('id');
+        $data['logs'] = $this->inventory_log->getLogsByItemId($item_id);
+        echo json_encode($data);
     }
 
     function editItemByJason()
@@ -489,6 +506,7 @@ class Medicine extends MX_Controller
     {
         
         $deptId = $this->session->userdata('department_id');
+        $user_id = $this->session->userdata('user_id');
 
         $flag = $this->input->get('flag');
 
@@ -538,6 +556,7 @@ class Medicine extends MX_Controller
             //     $this->load->view('home/footer');
             // }
         } else {
+            
             $data = array();
             $data = array(
                    
@@ -558,6 +577,12 @@ class Medicine extends MX_Controller
                 $item_id = $this->item_model->insertItem($itemData);
                 $this->inventory_model->insertItem($item_id,$data, $deptId);
                 // $this->session->set_flashdata('feedback', lang('added'));
+
+                $log_data = array();
+                $log_data = array('item_id' => $item_id, 'dept_id' => $deptId, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $quantity, 'remarks' => 'New Item Added', 'previous_qty' => 0, 'update_user' => $user_id);
+                // log this action
+                $this->inventory_log->insertLog($log_data);
+
             } else {
                 if($flag == 'e')
                 {
@@ -569,11 +594,20 @@ class Medicine extends MX_Controller
                     );
                     $this->inventory_model->insertItem($id,$data, $deptId);
                     // $this->session->set_flashdata('feedback', lang('added'));
+                    $log_data = array();
+                    $log_data = array('item_id' => $id, 'dept_id' => $deptId, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $quantity, 'remarks' => 'New Item Added', 'previous_qty' => 0, 'update_user' => $user_id);
+                    // log this action
+                    $this->inventory_log->insertLog($log_data);
                 }
                 else{
+                    $previous_qty = $this->inventory_model->getItemByIdAndDeptId($id, $deptId)->item_quantity;
                     $this->item_model->updateItem($id, $itemData);
                     $this->inventory_model->updateItem($id, $deptId, $data);
                     // $this->session->set_flashdata('feedback', lang('updated'));
+                    $log_data = array();
+                    $log_data = array('item_id' => $id, 'dept_id' => $deptId, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $quantity, 'remarks' => 'Updated', 'previous_qty' => $previous_qty, 'update_user' => $user_id);
+                    // log this action
+                    $this->inventory_log->insertLog($log_data);
                 }
             }
             redirect('home/inventory');
@@ -584,9 +618,17 @@ class Medicine extends MX_Controller
         $id = $this->input->get('id');
 
         $deptId = $this->session->userdata('department_id');
+        $user_id = $this->session->userdata('user_id');
 
         $this->inventory_model->deleteItemFromInventory($id,$deptId);
         // $this->session->set_flashdata('feedback', lang('deleted'));
+        $previous_qty = $this->inventory_model->getItemByIdAndDeptId($id, $deptId)->item_quantity;
+        $log_data = array();
+        $log_data = array('item_id' => $id, 'dept_id' => $deptId, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $previous_qty, 'remarks' => 'Deleted', 'previous_qty' => $previous_qty, 'update_user' => $user_id);
+       
+        // log this action
+        $this->inventory_log->insertLog($log_data);
+        
         redirect('home/inventory');
     }
     function getItemList()
@@ -672,6 +714,7 @@ class Medicine extends MX_Controller
 
             $option2 = '<a class="btn btn-info btn-xs btn_width delete_button" href="medicine/deleteItem?id=' . $item->id . '" onclick="return confirm(\'Are you sure you want to delete this item?\');"><i class="fa fa-trash"> </i> ' . lang('delete') . '</a>';
             $option3 = '<button type="button" class="btn btn-info btn-xs btn_width removebutton" data-toggle="modal" data-id="' . $item->id . '"><i class="fa fa-edit"> </i> Remove </button>';
+            $log = '<button type="button" class="btn btn-info btn-xs btn_width log" data-toggle="modal" data-id="' . $item->id . '"> Logs </button>';
             $info[] = array(
                 $i,
                 $item->name,
@@ -679,13 +722,13 @@ class Medicine extends MX_Controller
                 // $item->box,
                 $settings->currency . $item->price,
                 // $settings->currency . $item->s_price,
-                $quan ,
+                $quan . ' ' . $load,
                 $item->unit,
                 $item->description,
                 $item->last_add,
                 $item->last_out,
                 $item->department,
-                $option1 . ' ' . $load . ' ' .$option3 .' '.   $option2
+                $option1 . ' ' .$option3 .' '.   $option2 . ' ' . $log
                 //  $options2
             );
         }
