@@ -472,10 +472,75 @@ class Medicine extends MX_Controller
     }
     function getLogsByItemId()
     {
+        $requestData = $_REQUEST;
+        $start = $requestData['start'];
+        $limit = $requestData['length'];
+
         $item_id = $this->input->get('id');
-        $data['logs'] = $this->inventory_log->getLogsByItemId($item_id);
-        echo json_encode($data);
+        $order = $this->input->post("order");
+
+        $columns_valid = array(
+            "0" => "id",
+            "1" => "itemname",
+            "2" => "quantity",
+            "3" => "previous_qty",
+            "4" => "timestamp",
+            "5" => "remarks",
+        );
+        $values = $this->settings_model->getColumnOrder($order, $columns_valid);
+        $dir = $values[0];
+        $order = $values[1];
+
+        $data['items'] = $this->inventory_log->getLogsByItemId($item_id, $limit, $start, $order, $dir);
+
+        $info = array();
+        $i = $start + 1; // Use start value to correctly number rows
+
+        foreach ($data['items'] as $item) {
+           
+
+            $info[] = array(
+                $i,
+                $item->itemname,
+                $item->quantity,
+                $item->remarks,
+                $item->previous_qty,
+                $item->user,
+                $item->timestamp,
+                
+            );
+
+            $i++;
+        }
+
+        $totalEntries = count($this->inventory_log->getLogs($item_id, $this->session->userdata('department_id')));
+
+        // $output = array(
+        //     "draw" => intval($requestData['draw']),
+        //     "recordsTotal" => $totalEntries,
+        //     "recordsFiltered" => count($data['items']),
+        //     "data" => $info,
+        // );
+
+        if (!empty($data['items'])) {
+            $output = array(
+                "draw" => intval($requestData['draw']),
+                "recordsTotal" => $totalEntries,
+                "recordsFiltered" => count($data['items']),
+                "data" => $info,
+            );
+        } else {
+            $output = array(
+                "draw" => intval($requestData['draw']),
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => array(),
+            );
+        }
+
+        echo json_encode($output);
     }
+
 
     function editItemByJason()
     {
@@ -518,6 +583,7 @@ class Medicine extends MX_Controller
         $quantity = $this->input->post('quantity');
         $description = $this->input->post('description');
         $unit = $this->input->post('unit');
+        $expire_date = $this->input->post('expire_date');
         
        
         if ((empty($id))) {
@@ -558,10 +624,13 @@ class Medicine extends MX_Controller
         } else {
             
             $data = array();
+            //convert date to mysql format
+            $expire_date = date('Y-m-d', strtotime($expire_date));
             $data = array(
                    
                 'item_quantity' => $quantity,
                 'last_add_date' => $last_add_date,
+                'expire_date' => $expire_date,
 
             );
 
@@ -590,6 +659,7 @@ class Medicine extends MX_Controller
                    
                         'item_quantity' => $quantity,
                         'last_add_date' => date('y/m/d'),
+                        'expire_date' => $expire_date,
         
                     );
                     $this->inventory_model->insertItem($id,$data, $deptId);
@@ -630,6 +700,105 @@ class Medicine extends MX_Controller
         $this->inventory_log->insertLog($log_data);
         
         redirect('home/inventory');
+    }
+
+    function getExpiredItemList()
+    {
+        $requestData = $_REQUEST;
+        $start = $requestData['start'];
+        $limit = $requestData['length'];
+        $search = $this->input->post('search')['value'];
+
+        $order = $this->input->post("order");
+        
+
+        $columns_valid = array(
+            "0" => "id",
+            "1" => "name",
+            "2" => "category",
+            "3" => "price",
+            "4" => "quantity",
+            "5" => "unit",
+            "6" => "description",
+            "7" => "last_add",
+            "8" => "last_out",
+
+            "9" => "department",
+            // "10" => "e_date",
+        );
+        $values = $this->settings_model->getColumnOrder($order, $columns_valid);
+        $dir = $values[0];
+        $order = $values[1];
+
+        
+       
+
+        if ($limit == -1) {
+            if (!empty($search)) {
+                $data['items'] = $this->inventory_model->getInventoryBySearch($search, $order, $dir);
+            } else {
+                $data['items'] = $this->inventory_model->getInventoryWithoutSearch($order, $dir);
+            }
+        } else {
+            if (!empty($search)) {
+                $data['items'] = $this->inventory_model->getInventoryByLimitBySearch($limit, $start, $search, $order, $dir);
+            } else {
+                $data['items'] = $this->inventory_model->getInventoryExpiredDataByLimit($limit, $start, $order, $dir);
+            }
+        }
+
+        $i = 0;
+        foreach ($data['items'] as $item) {
+            $i = $i + 1;
+            $settings = $this->settings_model->getSettings();
+            if ($item->quantity <= 0) {
+                $quan = '<p class="os">Stock Out</p>';
+            } else {
+                $quan = $item->quantity;
+            }
+            
+            // parse date to dd MMM, yyyy format
+            // $last_add = new DateTime($item->last_add);
+            // $last_out = new DateTime($item->last_out);
+            // $expire_date = new DateTime($item->expire_date);
+            $info[] = array(
+                $i,
+                $item->name,
+                $item->category,
+                // $item->box,
+                $settings->currency . $item->price,
+                // $settings->currency . $item->s_price,
+                $quan ,
+                $item->unit,
+                $item->description,
+                
+                $item->last_add,
+                $item->last_out,
+                $item->expire_date,
+                $item->department,
+                
+                //  $options2
+            );
+        }
+        $totalEntries = count($this->inventory_model->getInventory());
+
+        if (!empty($data['items'])) {
+            $output = array(
+                "draw" => intval($requestData['draw']),
+                "recordsTotal" => $totalEntries,
+                "recordsFiltered" => $i,
+                "data" => $info
+            );
+        } else {
+            $output = array(
+                // "draw" => 1,
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => []
+            );
+        }
+
+        echo json_encode($output);
     }
     function getItemList()
     {
@@ -709,12 +878,19 @@ class Medicine extends MX_Controller
             } else {
                 $quan = $item->quantity;
             }
+            
+
             $load = '<button type="button" class="btn btn-info btn-xs btn_width load" data-toggle="modal" data-id="' . $item->id . '">' . lang('load') . '</button>';
             $option1 = '<button type="button" class="btn btn-info btn-xs btn_width editbutton" data-toggle="modal" data-id="' . $item->id . '"><i class="fa fa-edit"> </i> ' . lang('edit') . '</button>';
 
             $option2 = '<a class="btn btn-info btn-xs btn_width delete_button" href="medicine/deleteItem?id=' . $item->id . '" onclick="return confirm(\'Are you sure you want to delete this item?\');"><i class="fa fa-trash"> </i> ' . lang('delete') . '</a>';
             $option3 = '<button type="button" class="btn btn-info btn-xs btn_width removebutton" data-toggle="modal" data-id="' . $item->id . '"><i class="fa fa-edit"> </i> Remove </button>';
             $log = '<button type="button" class="btn btn-info btn-xs btn_width log" data-toggle="modal" data-id="' . $item->id . '"> Logs </button>';
+
+            // parse date to dd MMM, yyyy format
+            // $last_add = new DateTime($item->last_add);
+            // $last_out = new DateTime($item->last_out);
+            // $expire_date = new DateTime($item->expire_date);
             $info[] = array(
                 $i,
                 $item->name,
@@ -725,8 +901,10 @@ class Medicine extends MX_Controller
                 $quan . ' ' . $load,
                 $item->unit,
                 $item->description,
+                
                 $item->last_add,
                 $item->last_out,
+                $item->expire_date,
                 $item->department,
                 $option1 . ' ' .$option3 .' '.   $option2 . ' ' . $log
                 //  $options2

@@ -7,6 +7,10 @@
         <section class="">
             <header class="panel-heading">
                 Inventory
+
+                <button id="expiredBtn" class="btn green btn-xs">
+                                See Expired Items
+                </button>
                 <div class="col-md-4 no-print pull-right"> 
                     <a data-toggle="modal" href="#myModal">
                         <div class="btn-group pull-right">
@@ -15,6 +19,7 @@
                             </button>
                         </div>
                     </a>
+                    
                 </div>
                 <style>
                     
@@ -78,6 +83,7 @@
                                 <th> Description</th>
                                 <th> Last Added </th>
                                 <th> Last Out </th>
+                                <th> Expire Date </th>
                                 <th> Department </th>
                                 <th> <?php echo lang('options'); ?></th>
                             </tr>
@@ -160,10 +166,11 @@
                         <label for="description">description</label>
                         <input type="text" class="form-control" name="description"  value='' placeholder="">
                     </div>
-                    <!-- <div class="form-group col-md-3">
-                        <label for="exampleInputEmail1"> Last Add Date &ast;</label>
-                        <input type="text" class="form-control default-date-picker readonly" name="last_add_date"  value='' placeholder="" required="">
+                     <div class="form-group col-md-3">
+                        <label for="exampleInputEmail1"> Expire Date &ast;</label>
+                        <input type="text" class="form-control default-date-picker " name="expire_date"  value='' placeholder="" required="">
                     </div>
+                    <!--
                     <div class="form-group col-md-3">
                         <label for="exampleInputEmail1"> Last Out Date &ast;</label>
                         <input type="text" class="form-control default-date-picker readonly" name="last_out_date"  value='' placeholder="" required="">
@@ -380,40 +387,26 @@ $(document).ready(function () {
     $(".table").on("click", ".log", function () {
         "use strict";
         var iid = $(this).attr('data-id');
-        var logdata = [];
-        $.ajax({
-            url: 'medicine/getLogsByItemId?id=' + iid,
-            method: 'GET',
-            data: '',
-            dataType: 'json',
-            success: function (response) {
-                "use strict";
-                console.log(response);
-                
-                logdata =response.logs;
-                var logs = []
-                logdata.forEach(entry => {
-                    const logMessage = `#${entry.id}: ${entry.itemname} is ${entry.remarks.toLowerCase()} [${entry.quantity}] on ${entry.timestamp} : previously: [${entry.previous_qty}]`;
-                    logs.push(logMessage);
-                });
-                if(logs.length == 0){
-                    logs.push("No logs found for this item");
-                }
-                
-                openModal(logs);
-            }
-        })
+        // var logdata = [];
+        // redirect to inventory_log_view.php with item id
+        // window.location.href = "home/inventoryLog?item_id=" + iid;
+        var newUrl = "home/inventoryLog?item_id=" + iid;
 
-        // process logdata as a list like this
-        // logs = [
-        //     "#123: Item1 is added [5] on 2023-01-01 : previously: [0]",
-        //     "#456: Item2 is added [10] on 2023-01-02 : previously: [2]",
-        //     "#789: Item3 is added [8] on 2023-01-03 : previously: [5]"
-        // ];
+        // Open the new URL in a new tab
+        window.open(newUrl, '_blank');
+        
 
         
 
         
+    });
+
+    // on click expiredBtn redirect to expired_item_view.php
+    $("#expiredBtn").on("click", function () {
+        "use strict";
+        // redirect to expired_item_view.php
+        var newURL = "home/expiredInventoryItems";
+        window.open(newURL, '_blank');
     });
 
    
@@ -430,6 +423,8 @@ $(document).ready(function () {
 
         $('#editMedicineForm1').find('[name="id"]').val(iid).end();
     });
+
+
 });
 
 $(document).ready(function () {

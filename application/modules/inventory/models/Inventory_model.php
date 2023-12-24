@@ -78,7 +78,7 @@ class Inventory_model extends CI_model {
     function getInventoryDataByLimit($limit, $start, $order, $dir) {
         $dept_id = $this->session->userdata('department_id');
        
-        $this->db->select('l.item_id as id, i.item_name as name, i.item_type as category, i.item_price as price, l.item_quantity as quantity, i.item_unit as unit, i.item_description as description, l.last_add_date as last_add, l.last_out_date as last_out,d.name as department');
+        $this->db->select('l.item_id as id, i.item_name as name, i.item_type as category, i.item_price as price, l.item_quantity as quantity, i.item_unit as unit, i.item_description as description, l.last_add_date as last_add, l.last_out_date as last_out, l.expire_date,d.name as department');
         $this->db->from('inventory as l');
         $this->db->join('item as i', 'i.item_id = l.item_id');
         $this->db->join('department as d', 'd.id = l.department_id');
@@ -91,6 +91,30 @@ class Inventory_model extends CI_model {
             $this->db->order_by('id', 'desc');
         }
     
+        $this->db->limit($limit, $start);
+    
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    function getInventoryExpiredDataByLimit($limit, $start, $order, $dir)
+    {
+        $dept_id = $this->session->userdata('department_id');
+       
+        $this->db->select('l.item_id as id, i.item_name as name, i.item_type as category, i.item_price as price, l.item_quantity as quantity, i.item_unit as unit, i.item_description as description, l.last_add_date as last_add, l.last_out_date as last_out, l.expire_date,d.name as department');
+        $this->db->from('inventory as l');
+        $this->db->join('item as i', 'i.item_id = l.item_id');
+        $this->db->join('department as d', 'd.id = l.department_id');
+        $this->db->where('l.hospital_id', $this->session->userdata('hospital_id'));
+        $this->db->where('l.department_id', $dept_id);
+        $this->db->where('l.expire_date <=', date('Y-m-d'));
+    
+        // if ($order != null) {
+        //     $this->db->order_by($order, $dir);
+        // } else {
+        //     $this->db->order_by('id', 'desc');
+        // }
+        $this->db->order_by('l.expire_date', 'desc');
         $this->db->limit($limit, $start);
     
         $query = $this->db->get();
