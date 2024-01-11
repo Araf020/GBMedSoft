@@ -208,6 +208,17 @@ class Home extends MY_Controller {
         $this->load->view('home/footer');
     }
 
+
+    public function QueuedItem() {
+        $data['settings'] = $this->settings_model->getSettings();
+        // get item id from url
+        // $item_id = $this->uri->segment(3);
+        // $data['item_id'] = $item_id;
+        $this->load->view('home/dashboard', $data); 
+        $this->load->view('inventory/moved_item_view', $data);
+        $this->load->view('home/footer'); 
+    }
+
 }
 
 /* End of file home.php */

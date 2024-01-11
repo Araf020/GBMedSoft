@@ -40,7 +40,7 @@ class Inventory_model extends CI_model {
     }
 
     function getItemByIdAndDeptId($item_id, $deptId) {
-        $this->db->select('item_quantity');
+        $this->db->select('item_quantity,expire_date,item_id,inventory_id, expire_date');
         $this->db->from('inventory');
         $this->db->where('hospital_id', $this->session->userdata('hospital_id'));
         $this->db->where('item_id', $item_id);
@@ -217,6 +217,35 @@ class Inventory_model extends CI_model {
     //     //return the quantity value
     //     return $query->row();
     // }
+
+    function addQuantityByInventoryId($inventory_id, $quantity)
+    {
+        $this->db->select('item_quantity');
+        $this->db->from('inventory');
+        $this->db->where('inventory_id', $inventory_id);
+
+        $query = $this->db->get();
+        $previous_quantity = $query->row()->item_quantity;
+        $new_quantity = $previous_quantity + $quantity;
+        $data = array('item_quantity' => $new_quantity);
+        $this->db->where('inventory_id', $inventory_id);
+        
+        
+        $this->db->update('inventory', $data);
+
+
+    }
+
+    function getQuantityById($inventory_id)
+    {
+        $this->db->select('item_quantity');
+        $this->db->from('inventory');
+        $this->db->where('inventory_id', $inventory_id);
+
+        $query = $this->db->get();
+        $quantity = $query->row()->item_quantity;
+        return $quantity;
+    }
     
     
     

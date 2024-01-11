@@ -64,6 +64,24 @@ class Inventory_log extends CI_model {
 
         return $query->result();
     }
+
+    //get unread logs
+    public function  getUnreadLogs($dept_id)
+    {
+        $hospital_id = $this->session->userdata('hospital_id');
+        $this->db->select('l.item_id as id, i.item_name as itemname, u.username as user, l.qty as quantity, l.previous_qty, l.timestamp, l.remarks');
+        $this->db->from('inventory_log as l');
+        $this->db->join('item as i', 'i.item_id = l.item_id');
+        $this->db->join('users as u', 'u.id = l.update_user');
+        
+        $this->db->where('l.dept_id', $dept_id);
+        $this->db->where('l.hospital_id', $hospital_id);
+        $this->db->where('l.is_read', 0);
+        $this->db->order_by('l.timestamp', 'desc');
+        $query = $this->db->get();
+        return $query->result();
+
+    }
     
 
     

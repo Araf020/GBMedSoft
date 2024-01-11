@@ -13,6 +13,8 @@ class Medicine extends MX_Controller
         $this->load->model('inventory/inventory_model');
         $this->load->model('inventory/item_model');
         $this->load->model('inventory/inventory_log');
+        $this->load->model('inventory/item_sharing_queue');
+        $this->load->model('department/department_model');
         if (!$this->ion_auth->in_group(array('admin', 'Pharmacist', 'Doctor','Laboratorist'))) {
             redirect('home/permission');
         }
@@ -453,6 +455,7 @@ class Medicine extends MX_Controller
         $user_id = $this->session->userdata('user_id');
         $item_id = $this->input->post('id');
         $qty = $this->input->post('qty');
+        $reason = $this->input->post('reason');
 
         // $previous_qty = $this->db->get_where('medicine', array('item_id' => $item_id))->row()->quantity;
         // $previous_qty = $this->db->get_where('inventory', array('item_id' => $item_id, 'department_id' => $deptId))->row()->item_quantity;
@@ -464,7 +467,7 @@ class Medicine extends MX_Controller
         $this->inventory_model->updateItem($item_id, $deptId, $data);
         // $this->session->set_flashdata('feedback', 'item removed');
         $log_data = array();
-        $log_data = array('item_id' => $item_id, 'dept_id' => $deptId, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $qty, 'remarks' => 'Taken Out', 'previous_qty' => $previous_qty, 'update_user' => $user_id);
+        $log_data = array('item_id' => $item_id, 'dept_id' => $deptId, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $qty, 'remarks' => 'Taken Out' . ' ['. $reason . '] ', 'previous_qty' => $previous_qty, 'update_user' => $user_id);
        
         // log this action
         $this->inventory_log->insertLog($log_data);
@@ -800,6 +803,287 @@ class Medicine extends MX_Controller
 
         echo json_encode($output);
     }
+
+    function getQueItem()
+    {
+        $requestData = $_REQUEST;
+        $start = $requestData['start'];
+        $limit = $requestData['length'];
+
+        // $item_id = $this->input->get('id');
+        $order = $this->input->post("order");
+        // id	quantity	item_name	from_dept_name	timestamp
+        $columns_valid = array(
+            "0" => "id",
+            "1" => "item_name",
+            "2" => "quantity",
+            "3" => "from_dept_name",
+            "4" => "timestamp",
+           
+        );
+        $values = $this->settings_model->getColumnOrder($order, $columns_valid);
+        $dir = $values[0];
+        $order = $values[1];
+
+        $data['items'] = $this->item_sharing_queue->getItemQueueByDeptId($this->session->userdata('department_id'));
+
+        $info = array();
+        $i = $start + 1; // Use start value to correctly number rows
+        
+        foreach ($data['items'] as $item) {
+            $option2 = '<a class="btn btn-info btn-xs btn_width" href="medicine/acceptItem?id=' . $item->id . '" onclick="return confirm(\'Are you sure you want to reject this item?\');"><i class="fa fa-trash"> </i> Accept </a>';
+            $option3 = '<a class="btn btn-info btn-xs btn_width delete_button" href="medicine/rejectItem?id=' . $item->id . '" onclick="return confirm(\'Are you sure you want to reject this item?\');"><i class="fa fa-trash"> </i> Reject </a>';
+           
+ // id	quantity	item_name	from_dept_name	timestamp
+
+            $info[] = array(
+                $i,
+                $item->item_name,
+                $item->quantity,
+                $item->from_dept_name,
+                $item->timestamp,
+                $option2 .' '. $option3,
+                
+            );
+
+            $i++;
+        }
+
+        $totalEntries = count($this->item_sharing_queue->getItemQueueByDeptId($this->session->userdata('department_id')));
+
+        // $output = array(
+        //     "draw" => intval($requestData['draw']),
+        //     "recordsTotal" => $totalEntries,
+        //     "recordsFiltered" => count($data['items']),
+        //     "data" => $info,
+        // );
+
+        if (!empty($data['items'])) {
+            $output = array(
+                "draw" => intval($requestData['draw']),
+                "recordsTotal" => $totalEntries,
+                "recordsFiltered" => count($data['items']),
+                "data" => $info,
+            );
+        } else {
+            $output = array(
+                "draw" => intval($requestData['draw']),
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => array(),
+            );
+        }
+
+        echo json_encode($output);
+    }
+
+
+    function moveItemFromQueToInventory($item_id,$dest_dept_id, $qty, $expire_date)
+    {
+        //update the destination department inventory
+        $user_id = $this->session->userdata('user_id');
+        $itemdata = $this->inventory_model->getItemByIdAndDeptId($item_id, $dest_dept_id);
+        if(empty($itemdata))
+        {
+            $data = array();
+            $data = array(
+                
+                'item_quantity' => $qty,
+                'last_add_date' => date('Y-m-d H:i:s'),
+                'expire_date' => $expire_date,
+
+            );
+            // $data = array('item_id' => $item_id, 'department_id' => $dest_dept_id, 'item_quantity' => $qty, 'last_add_date' => date('Y-m-d H:i:s'));
+            $this->inventory_model->insertItem($item_id, $data, $dest_dept_id);
+            $log_data = array();
+            $log_data = array('item_id' => $item_id, 'dept_id' => $dest_dept_id, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $qty, 'remarks' => 'New Item Added', 'previous_qty' => 0, 'update_user' => $user_id);
+
+            // log this action
+            $this->inventory_log->insertLog($log_data);
+
+            //send to destination queue
+            // the item_sharing_queue table
+            // id	inventory_id	from_dept	dest_dept	item_id	hospital_id	quantity	status	timestamp	
+            
+        }
+        else{
+            $previous_qty = $itemdata->item_quantity;
+            $new_qty = $previous_qty + $qty;
+            $data = array();
+            $data = array('item_quantity' => $new_qty, 'last_add_date' => date('Y-m-d H:i:s'));
+            $this->inventory_model->updateItem($item_id, $dest_dept_id, $data);
+
+            $log_data = array();
+            $log_data = array('item_id' => $item_id, 'dept_id' => $dest_dept_id, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $qty, 'remarks' => 'Added', 'previous_qty' => $previous_qty, 'update_user' => $user_id);
+
+            // log this action
+            $this->inventory_log->insertLog($log_data);
+        }
+    }
+
+    function acceptItem()
+    {
+        $queue_id = $this->input->get('id');
+        $data = array();
+
+        $data = array('status' => "Accepted");
+        $this->item_sharing_queue->updateItemQueue($queue_id,$data);
+
+         
+         $itemdataFromQueue = $this->item_sharing_queue->getItemById($queue_id);
+
+         $item_id = $itemdataFromQueue->item_id;
+         $dest_dept_id = $itemdataFromQueue->dest_dept;
+         $from_dept_id = $itemdataFromQueue->from_dept;
+
+         $qty = $itemdataFromQueue->quantity;
+         $expire_date = $itemdataFromQueue->expire_date;
+
+
+         //add to the inventory 
+         $user_id = $this->session->userdata('user_id');
+         $itemdata = $this->inventory_model->getItemByIdAndDeptId($item_id, $dest_dept_id);
+
+         $senderInfo = $this->department_model->getDepartmentById($from_dept_id);
+         if(empty($itemdata))
+         {
+             $data = array();
+             $data = array(
+                 
+                 'item_quantity' => $qty,
+                 'last_add_date' => date('Y-m-d H:i:s'),
+                 'expire_date' => $expire_date,
+ 
+             );
+             // $data = array('item_id' => $item_id, 'department_id' => $dest_dept_id, 'item_quantity' => $qty, 'last_add_date' => date('Y-m-d H:i:s'));
+             $this->inventory_model->insertItem($item_id, $data, $dest_dept_id);
+             $log_data = array();
+             $log_data = array('item_id' => $item_id, 'dept_id' => $dest_dept_id, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $qty, 'remarks' => 'New Item Added [sender: '.$senderInfo->name.']', 'previous_qty' => 0, 'update_user' => $user_id);
+ 
+             // log this action
+             $this->inventory_log->insertLog($log_data);
+ 
+             //send to destination queue
+             // the item_sharing_queue table
+             // id	inventory_id	from_dept	dest_dept	item_id	hospital_id	quantity	status	timestamp	
+             
+         }
+         else{
+             $previous_qty = $itemdata->item_quantity;
+             $new_qty = $previous_qty + $qty;
+             $data = array();
+             $data = array('item_quantity' => $new_qty, 'last_add_date' => date('Y-m-d H:i:s'));
+             $this->inventory_model->updateItem($item_id, $dest_dept_id, $data);
+ 
+             $log_data = array();
+             $log_data = array('item_id' => $item_id, 'dept_id' => $dest_dept_id, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $qty, 'remarks' => 'Added [sender: '.$senderInfo->name.']', 'previous_qty' => $previous_qty, 'update_user' => $user_id);
+ 
+             // log this action
+             $this->inventory_log->insertLog($log_data);
+         }
+
+
+         
+
+         
+        //  $qty = $qty*(-1); // to subtract the quantity from the inventory
+ 
+        //  $inventory_id = $itemdataFromQueue->inventory_id;
+ 
+        //  $this->inventory_model->addQuantityByInventoryId($inventory_id,$qty);
+
+
+        redirect('home/QueuedItem');
+
+        
+    }
+
+    function rejectItem()
+    {
+        $queue_id = $this->input->get('id');
+        $data = array();
+
+        $data = array('status' => "Rejected");
+        $this->item_sharing_queue->updateItemQueue($queue_id,$data);
+
+        $itemdataFromQueue = $this->item_sharing_queue->getItemById($queue_id);
+        $item_id = $itemdataFromQueue->item_id;
+         $dest_dept_id = $itemdataFromQueue->dest_dept;
+         $from_dept_id = $itemdataFromQueue->from_dept;
+         $qty = $itemdataFromQueue->quantity;
+
+         $dest_dept_info = $this->department_model->getDepartmentById($dest_dept_id);
+ 
+         $inventory_id = $itemdataFromQueue->inventory_id;
+         //previous quantity of the sender inventory
+         $quantity = $this->inventory_model->getQuantityById($inventory_id);
+ 
+         $this->inventory_model->addQuantityByInventoryId($inventory_id,$qty);
+
+         $logdata = array();
+         $logdata = array('item_id' => $item_id, 'dept_id' => $from_dept_id, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $qty, 'remarks' => 'Rejected by '. $dest_dept_info->name, 'previous_qty' => $quantity, 'update_user' => $this->session->userdata('user_id'));
+         $this->inventory_log->insertLog($logdata);
+
+        redirect('home/QueuedItem');
+    }
+
+    function getDepartmentsByJson()
+    {
+        $departments = $this->department_model->getDepartment();
+        echo json_encode($departments);
+    }
+
+    function moveItem()
+    {
+        $deptId = $this->session->userdata('department_id');
+        $user_id = $this->session->userdata('user_id');
+        $item_id = $this->input->post('id');
+        $qty = $this->input->post('qty');
+        $dest_dept_id = $this->input->post('dept_id');
+        $dest_dept_info = $this->department_model->getDepartmentById($dest_dept_id);
+
+        // $previous_qty = $this->db->get_where('medicine', array('item_id' => $item_id))->row()->quantity;
+        // $previous_qty = $this->db->get_where('inventory', array('item_id' => $item_id, 'department_id' => $deptId))->row()->item_quantity;
+        $srcItemInfo = $this->inventory_model->getItemByIdAndDeptId($item_id, $deptId);
+        $previous_qty = $srcItemInfo->item_quantity;
+        
+
+        $new_qty = $previous_qty - $qty;
+        $data = array();
+        $data = array('item_quantity' => $new_qty, 'last_out_date' => date('Y-m-d H:i:s'));
+        $this->inventory_model->updateItem($item_id, $deptId, $data);
+        // $this->session->set_flashdata('feedback', 'item removed');
+        $log_data = array();
+        $log_data = array('item_id' => $item_id, 'dept_id' => $deptId, 'hospital_id' => $this->session->userdata('hospital_id'), 'qty' => $qty, 'remarks' => 'Sent item to => '. $dest_dept_info->name, 'previous_qty' => $previous_qty, 'update_user' => $user_id);
+       
+        // log this action
+        $this->inventory_log->insertLog($log_data);
+
+        $itemdata = $this->inventory_model->getItemByIdAndDeptId($item_id, $deptId);
+        //send to destination queue
+        //     // the item_sharing_queue table
+        //     // id	inventory_id	from_dept	dest_dept	item_id	hospital_id	quantity	status	timestamp  expire_date
+        $inventory_id = $itemdata->inventory_id;
+        $expire_date = $itemdata->expire_date;
+        $queueData = array();
+        $queueData = array(
+            'inventory_id' => $inventory_id,
+            'from_dept' => $deptId,
+            'dest_dept' => $dest_dept_id,
+            'item_id' => $item_id,
+            'hospital_id' => $this->session->userdata('hospital_id'),
+            'quantity' => $qty,
+            'status' => 'Pending',
+            'expire_date' => $expire_date,
+
+
+
+        );
+
+        $this->item_sharing_queue->insertItemQueue($queueData);
+
+        redirect('home/inventory');
+    }
     function getItemList()
     {
         $requestData = $_REQUEST;
@@ -885,6 +1169,7 @@ class Medicine extends MX_Controller
 
             $option2 = '<a class="btn btn-info btn-xs btn_width delete_button" href="medicine/deleteItem?id=' . $item->id . '" onclick="return confirm(\'Are you sure you want to delete this item?\');"><i class="fa fa-trash"> </i> ' . lang('delete') . '</a>';
             $option3 = '<button type="button" class="btn btn-info btn-xs btn_width removebutton" data-toggle="modal" data-id="' . $item->id . '"><i class="fa fa-edit"> </i> Remove </button>';
+            $move = '<button type="button" class="btn btn-info btn-xs btn_width move" data-toggle="modal" data-id="' . $item->id . '"><i class="fa fa-edit"> </i> Move </button>';
             $log = '<button type="button" class="btn btn-info btn-xs btn_width log" data-toggle="modal" data-id="' . $item->id . '"> Logs </button>';
 
             // parse date to dd MMM, yyyy format
@@ -906,7 +1191,7 @@ class Medicine extends MX_Controller
                 $item->last_out,
                 $item->expire_date,
                 $item->department,
-                $option1 . ' ' .$option3 .' '.   $option2 . ' ' . $log
+                $option1 . ' ' .$option3 .' '. $move  . ' ' . $log
                 //  $options2
             );
         }
@@ -989,3 +1274,6 @@ class Medicine extends MX_Controller
 
 /* End of file medicine.php */
 /* Location: ./application/modules/medicine/controllers/medicine.php */
+
+
+
