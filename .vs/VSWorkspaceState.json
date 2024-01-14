@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\.idea",
+    "\\application",
+    "\\application\\modules",
+    "\\application\\modules\\home",
+    "\\application\\modules\\home\\views",
+    "\\common",
+    "\\front",
+    "\\front-end",
+    "\\system"
+  ],
+  "PreviewInSolutionExplorer": false
+}

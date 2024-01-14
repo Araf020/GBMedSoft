@@ -415,7 +415,7 @@
                                     <span class="badge bg-success">
                                         <?php
                                         $this->db->where('hospital_id', $this->hospital_id);
-                                        $this->db->where('add_date', date('m/d/y'));
+                                        $this->db->where('add_date', date('d/m/y'));
                                         $query = $this->db->get('medicine');
                                         $query = $query->result();
                                         foreach ($query as $medicine) {
