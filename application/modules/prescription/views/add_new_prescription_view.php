@@ -10,7 +10,7 @@ if ($this->ion_auth->in_group('Doctor')) {
 
 <section id="main-content">
     <section class="wrapper site-min-height">
-         <link href="common/extranal/css/prescription/add_new_prescription_view.css" rel="stylesheet">
+         <!-- <link href="common/extranal/css/prescription/add_new_prescription_view.css" rel="stylesheet"> -->
         <section class="col-md-8">
             <header class="panel-heading">
                 <?php
@@ -170,16 +170,16 @@ if ($this->ion_auth->in_group('Doctor')) {
 
                                                   
                                                     $prescription_medicine = explode('###', $prescription->medicine);
-                                                    foreach ($prescription_medicine as $key => $value) {
-                                                        $prescription_medicine_extended = explode('***', $value);
-                                                        $medicine = $this->medicine_model->getMedicineById($prescription_medicine_extended[0]);
-                                                        ?>
-                                                        <option value="<?php echo $medicine->id . '*' . $medicine->name; ?>"  <?php echo 'data-dosage="' . $prescription_medicine_extended[1] . '"' . 'data-frequency="' . $prescription_medicine_extended[2] . '"data-days="' . $prescription_medicine_extended[3] . '"data-instruction="' . $prescription_medicine_extended[4] . '"'; ?> selected="selected">
-                                                            <?php echo $medicine->name; ?>
-                                                        </option>                
+                                                    // foreach ($prescription_medicine as $key => $value) {
+                                                    //     $prescription_medicine_extended = explode('***', $value);
+                                                    //     $medicine = $this->medicine_model->getMedicineById($prescription_medicine_extended[0]);
+                                                    //     ?>
+                                                    //     <option value="<?php echo $medicine->id . '*' . $medicine->name; ?>"  <?php echo 'data-dosage="' . $prescription_medicine_extended[1] . '"' . 'data-frequency="' . $prescription_medicine_extended[2] . '"data-days="' . $prescription_medicine_extended[3] . '"data-instruction="' . $prescription_medicine_extended[4] . '"'; ?> selected="selected">
+                                                    //         <?php echo $medicine->name; ?>
+                                                    //     </option>                
 
-                                                        <?php
-                                                    }
+                                                    //     <?php
+                                                    // }
                                                 }
                                                 ?>
                                             </select>
@@ -250,4 +250,4 @@ if ($this->ion_auth->in_group('Doctor')) {
 <script type="text/javascript">var select_doctor = "<?php echo lang('select_doctor'); ?>";</script>
 <script type="text/javascript">var select_patient = "<?php echo lang('select_patient'); ?>";</script>
 <script type="text/javascript">var language = "<?php echo $this->language; ?>";</script>
-<script src="common/extranal/js/prescription/add_new_prescription_view.js"></script>
+<script src="common/extranal/js/prescription/add_new_prescription_view2.js"></script>

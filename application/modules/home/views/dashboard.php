@@ -77,6 +77,8 @@
     
 
     <link href="common/css/style-responsive.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.18.0/font/bootstrap-icons.css">
+
 
     <?php
     if (!$this->ion_auth->in_group(array('superadmin'))) {
@@ -474,6 +476,7 @@
                                         ?>
                                     </span>
                                 </a>
+                                
                                 <ul class="dropdown-menu extended notification">
                                     <div class="notify-arrow notify-arrow-yellow"></div>
                                     <li>
@@ -492,6 +495,29 @@
                                         </a>
                                     </li>
                                 </ul>
+                            </li>
+                            <li>
+                                <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                    <!-- notification icon -->
+                                    <i class="fa fa-user"></i>
+                                    <span class="badge bg-success">
+                                        <?php
+                                        $this->db->where('hospital_id', $this->hospital_id);
+                                        $this->db->where('add_date', date('m/d/y'));
+                                        $query = $this->db->get('report');
+                                        $query = $query->result();
+                                        foreach ($query as $report) {
+                                            $report_number[] = '1';
+                                        }
+                                        if (!empty($report_number)) {
+                                            echo $report_number = array_sum($report_number);
+                                        } else {
+                                            $report_number = 0;
+                                            echo $report_number;
+                                        }
+                                        ?>
+                                    </span>
+                                </a>
                             </li>
                         <?php } ?>
                     <?php } ?>
@@ -681,7 +707,13 @@
                                     <li><a href="appointment/treatmentReport"><i class="fa fa-history"></i><?php echo lang('treatment_history'); ?></a></li>
                                     <li><a href="doctorvisit"><i class="fa fa-clinic-medical"></i><?php echo lang('doctor_visit'); ?></a></li>
                                 </ul>
+                                
                             </li>
+                            
+                            
+                            
+                            
+
                         <?php } ?>
                     <?php } ?>
                     <?php if ($this->ion_auth->in_group(array('admin', 'Accountant', 'Nurse', 'Doctor', 'Laboratorist', 'Receptionist'))) { ?>
@@ -995,6 +1027,12 @@
                                     <li><a href="lab/template"><i class="fa fa-plus-circle"></i><?php echo lang('template'); ?></a></li>
                                     <li><a href="macro"><i class="fa fa-file-medical"></i><?php echo lang('macro'); ?></a></li>
                                 </ul>
+                            </li>
+                            <li class="sub-menu">
+                                <a href="home/inventory">
+                                    <i class="fa fa-money-check"></i>
+                                    <span>Inventory</span>
+                                </a>
                             </li>
                         <?php } ?>
                     <?php } ?>

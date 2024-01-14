@@ -108,13 +108,6 @@ $(document).ready(function () {
  </div>\n\
  </div>\n\
 \n\
-<div class = "form-group medicine_sect col-md-2" ><div class=col-md-12>\n\
-<label><?php echo lang("dosage"); ?> </label>\n\
-</div>\n\
-<div class=col-md-12><input class = "state medi_div" name = "dosage[]" value = "' + dosage + '" placeholder="50 mg" required>\n\
- </div>\n\
- </div>\n\
-\n\
 <div class = "form-group medicine_sect col-md-2"><div class=col-md-12>\n\
 <label><?php echo lang("frequency"); ?> </label>\n\
 </div>\n\
@@ -199,14 +192,6 @@ $(document).ready(function () {
  <input type="hidden" class = "medi_div" id="med_id-' + id + '" name = "medicine[]" value = "' + med_id + '" placeholder="" required>\n\
  </div>\n\
  </div>\n\
-\n\
-<div class = "form-group medicine_sect col-md-2" ><div class=col-md-12>\n\
-<label><?php echo lang("dosage"); ?> </label>\n\
-</div>\n\
-<div class=col-md-12><input class = "state medi_div" name = "dosage[]" value = "" placeholder="50 mg" required>\n\
- </div>\n\
- </div>\n\
-\n\
 <div class = "form-group medicine_sect col-md-2"><div class=col-md-12>\n\
 <label><?php echo lang("frequency"); ?> </label>\n\
 </div>\n\

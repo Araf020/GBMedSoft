@@ -12,6 +12,7 @@ class Prescription extends MX_Controller {
         $this->load->model('patient/patient_model');
         $this->load->model('pharmacist/pharmacist_model');
         $this->load->model('doctor/doctor_model');
+        
         if (!$this->ion_auth->in_group(array('admin', 'Pharmacist', 'Doctor', 'Patient', 'Nurse', 'Receptionist'))) {
             redirect('home/permission');
         }
@@ -52,6 +53,8 @@ class Prescription extends MX_Controller {
         $this->load->view('home/footer'); 
     }
 
+    
+
     public function addPrescriptionView() {
 
         if (!$this->ion_auth->in_group(array('admin', 'Doctor'))) {
@@ -86,7 +89,8 @@ class Prescription extends MX_Controller {
         $doctor = $this->input->post('doctor');
         $symptom = $this->input->post('symptom');
         $medicine = $this->input->post('medicine');
-        $dosage = $this->input->post('dosage');
+      
+        // $dosage = $this->input->post('dosage');
         $frequency = $this->input->post('frequency');
         $days = $this->input->post('days');
         $instruction = $this->input->post('instruction');
@@ -101,7 +105,7 @@ class Prescription extends MX_Controller {
         if (!empty($medicine)) {
             foreach ($medicine as $key => $value) {
                 $report[$value] = array(
-                    'dosage' => $dosage[$key],
+                    'dosage' => '',
                     'frequency' => $frequency[$key],
                     'days' => $days[$key],
                     'instruction' => $instruction[$key],

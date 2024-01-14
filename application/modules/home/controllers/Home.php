@@ -13,6 +13,8 @@ class Home extends MY_Controller {
         $this->load->model('home_model');
         $this->load->model('hospital/hospital_model');
         $this->load->model('settings/settings_model');
+        $this->load->model('medicine/medicine_model');
+        $this->load->model('inventory/inventory_model');
         // $this->modules = array('finance', 'appointment', 'notice', 'home', 'settings');
         $this->modules = array(
             'bed',
@@ -172,6 +174,49 @@ class Home extends MY_Controller {
 
     public function permission() {
         $this->load->view('permission');
+    }
+
+    public function inventory() {   
+       
+  
+        $data['settings'] = $this->settings_model->getSettings();
+
+        // $department_id = $this->session->userdata('department_id');
+        // $data['items'] = $this->inventory_model->getInvetoryItemByDeptId($department_id);
+
+       
+
+        $this->load->view('home/dashboard', $data); 
+        $this->load->view('inventory/inventory_view', $data);
+        $this->load->view('home/footer'); 
+    }
+
+    public function inventoryLog() {
+        $data['settings'] = $this->settings_model->getSettings();
+        // get item id from url
+        // $item_id = $this->uri->segment(3);
+        // $data['item_id'] = $item_id;
+        $this->load->view('home/dashboard', $data); 
+        $this->load->view('inventory/inventory_log_view', $data);
+        $this->load->view('home/footer'); 
+    }
+
+    public function expiredInventoryItems() {
+        $data['settings'] = $this->settings_model->getSettings();
+        $this->load->view('home/dashboard', $data);
+        $this->load->view('inventory/expired_item_view', $data);
+        $this->load->view('home/footer');
+    }
+
+
+    public function QueuedItem() {
+        $data['settings'] = $this->settings_model->getSettings();
+        // get item id from url
+        // $item_id = $this->uri->segment(3);
+        // $data['item_id'] = $item_id;
+        $this->load->view('home/dashboard', $data); 
+        $this->load->view('inventory/moved_item_view', $data);
+        $this->load->view('home/footer'); 
     }
 
 }
