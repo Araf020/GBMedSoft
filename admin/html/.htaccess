@@ -1,0 +1,3 @@
+Options +FollowSymLinks
+RewriteEngine on
+RewriteRule ^(.*)/(.*)$ index.php?userid=$2&dum=$1 [NC,L]
